@@ -100,7 +100,6 @@ tr:last-child td{border-bottom:none}
 var S='https://qgctltxcgsnbrdtbhmay.supabase.co';
 var AN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnY3RsdHhjZ3NuYnJkdGJobWF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM0NzMwOTUsImV4cCI6MjAyOTA0OTA5NX0.qgqbU5ll7LFsKPBaZjZLkjVqy5kXVTWVaqDVb8ZKQSQ';
 var EV='d2b033e6-a79f-44e1-8282-f030bea541c0';
-var OR='fc511c38-937d-4a1a-bfe2-28ce4c7c7744';
 var PASS='smitten2026';
 
 function login(){
@@ -124,21 +123,23 @@ function sec(s){
 
 function hdrs(){return{apikey:AN,Authorization:'Bearer '+AN,'Content-Type':'application/json'}}
 
+async function rpc(fn,args){
+  var r=await fetch(S+'/rest/v1/rpc/'+fn,{method:'POST',headers:hdrs(),body:JSON.stringify(args)});
+  return r.json();
+}
+
 async function loadAtt(){
   var el=document.getElementById('at');
   el.innerHTML='<div style="text-align:center;padding:1rem"><span class="sp"></span></div>';
-  var r=await fetch(S+'/rest/v1/registrations?event_id=eq.'+EV+'&select=id,checked_in_at,status,profiles(first_name,last_name,email)',{headers:hdrs()});
-  if(!r.ok){el.innerHTML='<p style="color:#b71c1c;padding:1rem">Error loading.</p>';return;}
-  var d=await r.json();
+  var d=await rpc('admin_get_registrations',{p_event_id:EV,p_admin_secret:PASS});
   if(!d||!d.length){el.innerHTML='<p style="color:#999;text-align:center;padding:1.5rem">No registrations yet.</p>';return;}
   el.innerHTML='<table><thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Action</th></tr></thead><tbody>'
   +d.map(function(reg){
-    var p=reg.profiles||{};
-    var name=((p.first_name||'')+(p.last_name?' '+p.last_name:'')).trim()||'Unknown';
+    var name=((reg.first_name||'')+(reg.last_name?' '+reg.last_name:'')).trim()||'Unknown';
     var ci=!!reg.checked_in_at;
     return '<tr>'
       +'<td style="font-weight:500">'+name+'</td>'
-      +'<td style="color:#888;font-size:13px">'+(p.email||'')+'</td>'
+      +'<td style="color:#888;font-size:13px">'+(reg.email||'')+'</td>'
       +'<td><span class="badge '+(ci?'bi':'br')+'">'+(ci?'Checked in':'Registered')+'</span></td>'
       +'<td>'+(ci
         ?'<span style="color:#2e7d32;font-size:13px">&#10003; Done</span>'
@@ -149,8 +150,8 @@ async function loadAtt(){
 
 async function doCI(rid,btn){
   btn.disabled=true;btn.textContent='...';
-  var r=await fetch(S+'/rest/v1/registrations?id=eq.'+rid,{method:'PATCH',headers:Object.assign({},hdrs(),{Prefer:'return=minimal'}),body:JSON.stringify({checked_in_at:new Date().toISOString()})});
-  if(r.ok)loadAtt();
+  var d=await rpc('admin_checkin',{p_registration_id:rid,p_admin_secret:PASS});
+  if(d&&d.ok)loadAtt();
   else{btn.disabled=false;btn.textContent='Check in';alert('Failed. Try again.');}
 }
 
@@ -159,19 +160,15 @@ async function addP(){
   var msg=document.getElementById('am');
   if(!email){msg.innerHTML='<div class="al er">Enter an email.</div>';return;}
   msg.innerHTML='<div class="al inf"><span class="sp"></span> Looking up&hellip;</div>';
-  var pr=await fetch(S+'/rest/v1/profiles?email=eq.'+encodeURIComponent(email)+'&select=id,first_name,last_name',{headers:hdrs()});
-  var ps=await pr.json();
-  if(!ps||!ps.length){msg.innerHTML='<div class="al er">No profile found for that email.</div>';return;}
-  var p=ps[0];
-  var ex=await(await fetch(S+'/rest/v1/registrations?event_id=eq.'+EV+'&profile_id=eq.'+p.id+'&select=id',{headers:hdrs()})).json();
-  if(ex&&ex.length){msg.innerHTML='<div class="al inf">'+(p.first_name||email)+' is already registered.</div>';return;}
-  var ins=await fetch(S+'/rest/v1/registrations',{method:'POST',headers:Object.assign({},hdrs(),{Prefer:'return=minimal'}),body:JSON.stringify({event_id:EV,profile_id:p.id,organization_id:OR,status:'confirmed'})});
-  if(ins.ok){
-    msg.innerHTML='<div class="al ok">'+(p.first_name||email)+' registered successfully!</div>';
+  var d=await rpc('admin_lookup_and_register',{p_email:email,p_event_id:EV,p_admin_secret:PASS});
+  if(!d||!d.ok){
+    msg.innerHTML='<div class="al er">'+(d&&d.error?d.error:'Something went wrong.')+'</div>';
+  } else if(d.already_registered){
+    msg.innerHTML='<div class="al inf">'+(d.first_name||email)+' is already registered.</div>';
+  } else {
+    msg.innerHTML='<div class="al ok">'+(d.first_name||email)+' registered successfully!</div>';
     document.getElementById('ae').value='';
     loadAtt();
-  } else {
-    msg.innerHTML='<div class="al er">Registration failed. Try again.</div>';
   }
 }
 
@@ -194,32 +191,9 @@ async function doRelease(){
   var msg=document.getElementById('mm');
   msg.innerHTML='<div class="al inf"><span class="sp"></span> Computing matches&hellip;</div>';
   try{
-    var r=await fetch(S+'/rest/v1/event_picks?event_id=eq.'+EV+'&pick_type=in.(date,friend)&select=picker_id,picked_id,pick_type',{headers:hdrs()});
-    if(!r.ok)throw new Error('Failed to fetch picks');
-    var picks=await r.json();
-    var map={};
-    picks.forEach(function(p){
-      if(!map[p.picker_id])map[p.picker_id]={};
-      map[p.picker_id][p.picked_id]=p.pick_type;
-    });
-    var matched=[],seen={};
-    Object.keys(map).forEach(function(a){
-      Object.keys(map[a]).forEach(function(b){
-        var key=[a,b].sort().join('|');
-        if(seen[key])return;
-        seen[key]=true;
-        var atype=map[a][b];
-        var btype=map[b]&&map[b][a];
-        if(btype&&btype===atype){
-          matched.push({user_id:a,matched_user_id:b,match_type:atype,event_id:EV,organization_id:OR,status:'mutual'});
-        }
-      });
-    });
-    if(!matched.length){msg.innerHTML='<div class="al inf">No mutual matches found yet.</div>';return;}
-    await fetch(S+'/rest/v1/matches?event_id=eq.'+EV+'&status=eq.mutual',{method:'DELETE',headers:hdrs()});
-    var ins=await fetch(S+'/rest/v1/matches',{method:'POST',headers:Object.assign({},hdrs(),{Prefer:'return=minimal'}),body:JSON.stringify(matched)});
-    if(!ins.ok)throw new Error('Insert failed');
-    msg.innerHTML='<div class="al ok">&#10024; Done! '+matched.length+' mutual match(es) released. Participants can see them now.</div>';
+    var d=await rpc('release_event_matches',{p_event_id:EV,p_admin_secret:PASS});
+    if(!d||d.error)throw new Error(d&&d.error?d.error:'RPC failed');
+    msg.innerHTML='<div class="al ok">&#10024; Done! '+d.matches+' mutual match(es) released.</div>';
   }catch(e){
     msg.innerHTML='<div class="al er">Error: '+e.message+'</div>';
   }
