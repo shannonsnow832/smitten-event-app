@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Smitten Singles Admin</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh}
+.app{max-width:640px;margin:0 auto;padding:1.5rem 1rem}
+h1{font-size:20px;font-weight:700;color:#C6302C}
+.sub{font-size:13px;color:#888;margin-bottom:1.5rem;margin-top:2px}
+.card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+input{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fafafa;color:#1a1a1a;outline:none;margin-bottom:8px}
+input:focus{border-color:#C6302C}
+.btn{padding:10px 18px;background:#C6302C;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+.btn:hover{background:#a8231f}
+.btn:disabled{background:#ccc;cursor:not-allowed}
+.btn-out{background:#fff;color:#C6302C;border:1px solid #C6302C}
+.btn-out:hover{background:#fdecea}
+.btn-g{background:#2e7d32}
+.btn-g:hover{background:#1b5e20}
+.btn-full{display:block;width:100%}
+.al{padding:10px 14px;border-radius:8px;font-size:14px;margin-top:8px}
+.ok{background:#e8f5e9;color:#2e7d32}
+.er{background:#fdecea;color:#b71c1c}
+.inf{background:#e3f2fd;color:#1565c0}
+.nav{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
+.nt{padding:8px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;font-size:14px;cursor:pointer;color:#888}
+.nt.on{background:#C6302C;color:#fff;border-color:#C6302C;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;color:#888;font-weight:600;padding:6px 8px;border-bottom:1px solid #eee}
+td{padding:8px;border-bottom:1px solid #f5f5f5;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bi{background:#e8f5e9;color:#2e7d32}
+.br{background:#e3f2fd;color:#1565c0}
+.sp{display:inline-block;width:14px;height:14px;border:2px solid rgba(198,48,44,.2);border-top-color:#C6302C;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.sl{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div id="vl">
+  <div class="card" style="max-width:320px;margin:3rem auto">
+    <h1 style="margin-bottom:1rem">Admin Login</h1>
+    <input type="password" id="pw" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
+    <button class="btn btn-full" onclick="login()">Sign in</button>
+    <div id="le"></div>
+  </div>
+</div>
+
+<div id="va" style="display:none">
+  <h1>Event Admin</h1>
+  <p class="sub">Omaha Speed Dating &middot; May 12, 2026</p>
+  <div class="nav">
+    <button class="nt on" id="na" onclick="sec('a')">Attendees</button>
+    <button class="nt" id="np" onclick="sec('p')">Add participant</button>
+    <button class="nt" id="nm" onclick="sec('m')">Release matches</button>
+  </div>
+
+  <div id="sa">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span class="sl">Registered attendees</span>
+        <button class="btn btn-out" style="padding:6px 12px;font-size:13px" onclick="loadAtt()">&#8635; Refresh</button>
+      </div>
+      <div id="at"><div style="text-align:center;padding:1rem"><span class="sp"></span></div></div>
+    </div>
+  </div>
+
+  <div id="sp" style="display:none">
+    <div class="card">
+      <p class="sl">Add participant by email</p>
+      <p style="font-size:14px;color:#666;margin-bottom:12px">Looks up the profile and registers them to tonight's event.</p>
+      <input type="email" id="ae" placeholder="participant@email.com">
+      <button class="btn" onclick="addP()">Look up &amp; register</button>
+      <div id="am"></div>
+    </div>
+  </div>
+
+  <div id="sm" style="display:none">
+    <div class="card">
+      <p class="sl">Release matches</p>
+      <p style="font-size:14px;color:#666;margin-bottom:1rem">Computes all mutual Date+Date and Friend+Friend picks and writes them to the matches table. Participants will see their matches immediately.</p>
+      <button class="btn btn-g" style="padding:12px 24px;font-size:15px" onclick="doRelease()">&#10024; Compute &amp; release now</button>
+      <div id="mm"></div>
+    </div>
+    <div class="card">
+      <p class="sl">Pick summary</p>
+      <div id="ps"><span class="sp"></span></div>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+var S='https://qgctltxcgsnbrdtbhmay.supabase.co';
+var AN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnY3RsdHhjZ3NuYnJkdGJobWF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTM0NzMwOTUsImV4cCI6MjAyOTA0OTA5NX0.qgqbU5ll7LFsKPBaZjZLkjVqy5kXVTWVaqDVb8ZKQSQ';
+var EV='d2b033e6-a79f-44e1-8282-f030bea541c0';
+var OR='fc511c38-937d-4a1a-bfe2-28ce4c7c7744';
+var PASS='smitten2026';
+
+function login(){
+  var p=document.getElementById('pw').value;
+  if(p===PASS){
+    document.getElementById('vl').style.display='none';
+    document.getElementById('va').style.display='';
+    loadAtt();
+  } else {
+    document.getElementById('le').innerHTML='<div class="al er">Wrong password.</div>';
+  }
+}
+
+function sec(s){
+  ['a','p','m'].forEach(function(n){
+    document.getElementById('s'+n).style.display=n===s?'':'none';
+    document.getElementById('n'+n).classList.toggle('on',n===s);
+  });
+  if(s==='m')loadPS();
+}
+
+function hdrs(){return{apikey:AN,Authorization:'Bearer '+AN,'Content-Type':'application/json'}}
+
+async function loadAtt(){
+  var el=document.getElementById('at');
+  el.innerHTML='<div style="text-align:center;padding:1rem"><span class="sp"></span></div>';
+  var r=await fetch(S+'/rest/v1/registrations?event_id=eq.'+EV+'&select=id,checked_in_at,status,profiles(first_name,last_name,email)',{headers:hdrs()});
+  if(!r.ok){el.innerHTML='<p style="color:#b71c1c;padding:1rem">Error loading.</p>';return;}
+  var d=await r.json();
+  if(!d||!d.length){el.innerHTML='<p style="color:#999;text-align:center;padding:1.5rem">No registrations yet.</p>';return;}
+  el.innerHTML='<table><thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Action</th></tr></thead><tbody>'
+  +d.map(function(reg){
+    var p=reg.profiles||{};
+    var name=((p.first_name||'')+(p.last_name?' '+p.last_name:'')).trim()||'Unknown';
+    var ci=!!reg.checked_in_at;
+    return '<tr>'
+      +'<td style="font-weight:500">'+name+'</td>'
+      +'<td style="color:#888;font-size:13px">'+(p.email||'')+'</td>'
+      +'<td><span class="badge '+(ci?'bi':'br')+'">'+(ci?'Checked in':'Registered')+'</span></td>'
+      +'<td>'+(ci
+        ?'<span style="color:#2e7d32;font-size:13px">&#10003; Done</span>'
+        :'<button class="btn btn-out" style="padding:4px 10px;font-size:12px" onclick="doCI(\''+reg.id+'\',this)">Check in</button>')
+      +'</td></tr>';
+  }).join('')+'</tbody></table>';
+}
+
+async function doCI(rid,btn){
+  btn.disabled=true;btn.textContent='...';
+  var r=await fetch(S+'/rest/v1/registrations?id=eq.'+rid,{method:'PATCH',headers:Object.assign({},hdrs(),{Prefer:'return=minimal'}),body:JSON.stringify({checked_in_at:new Date().toISOString()})});
+  if(r.ok)loadAtt();
+  else{btn.disabled=false;btn.textContent='Check in';alert('Failed. Try again.');}
+}
+
+async function addP(){
+  var email=document.getElementById('ae').value.trim();
+  var msg=document.getElementById('am');
+  if(!email){msg.innerHTML='<div class="al er">Enter an email.</div>';return;}
+  msg.innerHTML='<div class="al inf"><span class="sp"></span> Looking up&hellip;</div>';
+  var pr=await fetch(S+'/rest/v1/profiles?email=eq.'+encodeURIComponent(email)+'&select=id,first_name,last_name',{headers:hdrs()});
+  var ps=await pr.json();
+  if(!ps||!ps.length){msg.innerHTML='<div class="al er">No profile found for that email.</div>';return;}
+  var p=ps[0];
+  var ex=await(await fetch(S+'/rest/v1/registrations?event_id=eq.'+EV+'&profile_id=eq.'+p.id+'&select=id',{headers:hdrs()})).json();
+  if(ex&&ex.length){msg.innerHTML='<div class="al inf">'+(p.first_name||email)+' is already registered.</div>';return;}
+  var ins=await fetch(S+'/rest/v1/registrations',{method:'POST',headers:Object.assign({},hdrs(),{Prefer:'return=minimal'}),body:JSON.stringify({event_id:EV,profile_id:p.id,organization_id:OR,status:'confirmed'})});
+  if(ins.ok){
+    msg.innerHTML='<div class="al ok">'+(p.first_name||email)+' registered successfully!</div>';
+    document.getElementById('ae').value='';
+    loadAtt();
+  } else {
+    msg.innerHTML='<div class="al er">Registration failed. Try again.</div>';
+  }
+}
+
+async function loadPS(){
+  var el=document.getElementById('ps');
+  var r=await fetch(S+'/rest/v1/event_picks?event_id=eq.'+EV+'&select=pick_type',{headers:hdrs()});
+  if(!r.ok){el.innerHTML='<p style="color:#999">Could not load.</p>';return;}
+  var d=await r.json();
+  var c={date:0,friend:0,not_again:0};
+  d.forEach(function(p){if(c[p.pick_type]!==undefined)c[p.pick_type]++;});
+  el.innerHTML='<table>'
+    +'<tr><td>Date picks</td><td><strong>'+c.date+'</strong></td></tr>'
+    +'<tr><td>Friend picks</td><td><strong>'+c.friend+'</strong></td></tr>'
+    +'<tr><td>Not again</td><td><strong>'+c.not_again+'</strong></td></tr>'
+    +'<tr><td style="color:#888">Total submitted</td><td><strong>'+(c.date+c.friend+c.not_again)+'</strong></td></tr>'
+    +'</table>';
+}
+
+async function doRelease(){
+  var msg=document.getElementById('mm');
+  msg.innerHTML='<div class="al inf"><span class="sp"></span> Computing matches&hellip;</div>';
+  try{
+    var r=await fetch(S+'/rest/v1/event_picks?event_id=eq.'+EV+'&pick_type=in.(date,friend)&select=picker_id,picked_id,pick_type',{headers:hdrs()});
+    if(!r.ok)throw new Error('Failed to fetch picks');
+    var picks=await r.json();
+    var map={};
+    picks.forEach(function(p){
+      if(!map[p.picker_id])map[p.picker_id]={};
+      map[p.picker_id][p.picked_id]=p.pick_type;
+    });
+    var matched=[],seen={};
+    Object.keys(map).forEach(function(a){
+      Object.keys(map[a]).forEach(function(b){
+        var key=[a,b].sort().join('|');
+        if(seen[key])return;
+        seen[key]=true;
+        var atype=map[a][b];
+        var btype=map[b]&&map[b][a];
+        if(btype&&btype===atype){
+          matched.push({user_id:a,matched_user_id:b,match_type:atype,event_id:EV,organization_id:OR,status:'mutual'});
+        }
+      });
+    });
+    if(!matched.length){msg.innerHTML='<div class="al inf">No mutual matches found yet.</div>';return;}
+    await fetch(S+'/rest/v1/matches?event_id=eq.'+EV+'&status=eq.mutual',{method:'DELETE',headers:hdrs()});
+    var ins=await fetch(S+'/rest/v1/matches',{method:'POST',headers:Object.assign({},hdrs(),{Prefer:'return=minimal'}),body:JSON.stringify(matched)});
+    if(!ins.ok)throw new Error('Insert failed');
+    msg.innerHTML='<div class="al ok">&#10024; Done! '+matched.length+' mutual match(es) released. Participants can see them now.</div>';
+  }catch(e){
+    msg.innerHTML='<div class="al er">Error: '+e.message+'</div>';
+  }
+}
+</script>
+</body>
+</html>
