@@ -126,7 +126,13 @@ tr:last-child td{border-bottom:none}
     </div>
     <div class="card">
       <p class="sl">All picks (full feedback)</p>
-      <p style="font-size:13px;color:#888;margin-bottom:12px">Every pick submitted — mutual or one-sided.</p>
+      <p style="font-size:13px;color:#888;margin-bottom:8px">Every pick submitted — mutual or one-sided.</p>
+      <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center">
+        <select id="pick-filter" onchange="filterPicks()" style="padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fafafa;flex:1">
+          <option value="">All participants</option>
+        </select>
+        <button class="btn btn-out" style="padding:8px 12px;font-size:13px" onclick="filterPicks()">Filter</button>
+      </div>
       <div id="ap"><div style="text-align:center;padding:1rem"><span class="sp"></span></div></div>
     </div>
   </div>
@@ -268,16 +274,20 @@ async function loadWhoSubmitted(submitterIds){
   if(!el)return;
   var d=await rpc('admin_get_registrations',{p_event_id:EV,p_admin_secret:PASS});
   if(!d||!d.length){el.innerHTML='<p style="color:#999">No registrations.</p>';return;}
-  var submitterArr=Array.isArray(submitterIds)?submitterIds:(submitterIds?Object.values(submitterIds):[]);
-  var submitted=new Set(submitterArr);
+  // submitterIds may be a JSON array of UUID strings
+  var submitterArr=[];
+  if(Array.isArray(submitterIds)){submitterArr=submitterIds;}
+  else if(submitterIds&&typeof submitterIds==='object'){submitterArr=Object.values(submitterIds);}
+  // Stringify all IDs for safe comparison
+  var submitted=new Set(submitterArr.map(function(s){return String(s);}));
   var total=d.length;
-  var done=d.filter(function(r){return submitted.has(r.profile_id);}).length;
+  var done=d.filter(function(r){return submitted.has(String(r.profile_id));}).length;
   el.innerHTML='<p style="font-size:14px;color:#555;margin-bottom:10px"><strong>'+done+' of '+total+'</strong> participants have submitted picks.</p>'
     +'<table><thead><tr><th>Name</th><th>Picks submitted</th></tr></thead><tbody>'
     +d.map(function(reg){
       var name=((reg.first_name||'')+(reg.last_name?' '+reg.last_name:'')).trim()||'Unknown';
-      var has=submitted.has(reg.profile_id);
-      return '<tr><td>'+name+'</td><td>'+(has?'<span style="color:#2e7d32;font-weight:600">&#10003; Yes</span>':'<span style="color:#b71c1c">&#8212; Not yet</span>')+'</td></tr>';
+      var has=submitted.has(String(reg.profile_id));
+      return '<tr><td>'+name+'</td><td>'+(has?'<span style="color:#2e7d32;font-weight:600">&#10003; Yes</span>':'<span style="color:#b71c1c">Not yet</span>')+'</td></tr>';
     }).join('')+'</tbody></table>';
 }
 
@@ -292,6 +302,23 @@ async function doRelease(){
     msg.innerHTML='<div class="al er">Error: '+e.message+'</div>';
   }
 }
+var ALL_PICKS_DATA = [];
+
+function filterPicks(){
+  var filter=document.getElementById('pick-filter').value;
+  var el=document.getElementById('ap');
+  var filtered=filter?ALL_PICKS_DATA.filter(function(p){
+    return (p.picker_first+' '+p.picker_last).trim()===filter||(p.picked_first+' '+p.picked_last).trim()===filter;
+  }):ALL_PICKS_DATA;
+  if(!filtered.length){el.innerHTML='<p style="color:#999;text-align:center;padding:1rem">No picks found.</p>';return;}
+  el.innerHTML='<table><thead><tr><th>From</th><th>To</th><th>Pick</th><th>Result</th></tr></thead><tbody>'
+  +filtered.map(function(p){
+    var pt=p.pick_type==='date'?'<span class="badge" style="background:#fdecea;color:#b71c1c">Date</span>':p.pick_type==='friend'?'<span class="badge" style="background:#e3f2fd;color:#1565c0">Friend</span>':'<span class="badge" style="background:#eee;color:#888">Not again</span>';
+    var result=p.is_mutual?'<span style="color:#2e7d32;font-weight:600">&#10024; Mutual</span>':'<span style="color:#aaa">One-sided</span>';
+    return '<tr><td style="font-weight:500">'+(p.picker_first||'')+' '+(p.picker_last||'')+'</td><td>'+(p.picked_first||'')+' '+(p.picked_last||'')+'</td><td>'+pt+'</td><td>'+result+'</td></tr>';
+  }).join('')+'</tbody></table>';
+}
+
 function adminOut(){document.getElementById('va').style.display='none';document.getElementById('vl').style.display='';document.getElementById('pw').value='';}
 
 async function loadResults(){
@@ -324,12 +351,19 @@ async function loadResults(){
   if(!allpicks||!allpicks.length){
     ap.innerHTML='<p style="color:#999;text-align:center;padding:1rem">No picks submitted yet.</p>';
   } else {
-    ap.innerHTML='<table><thead><tr><th>From</th><th>To</th><th>Pick</th><th>Result</th></tr></thead><tbody>'
-    +allpicks.map(function(p){
-      var pt=p.pick_type==='date'?'<span class="badge" style="background:#fdecea;color:#b71c1c">Date</span>':p.pick_type==='friend'?'<span class="badge" style="background:#e3f2fd;color:#1565c0">Friend</span>':'<span class="badge" style="background:#eee;color:#888">Not again</span>';
-      var result=p.is_mutual?'<span style="color:#2e7d32;font-weight:600">&#10024; Mutual</span>':'<span style="color:#aaa">One-sided</span>';
-      return '<tr><td style="font-weight:500">'+(p.picker_first||'')+' '+(p.picker_last||'')+'</td><td>'+(p.picked_first||'')+' '+(p.picked_last||'')+'</td><td>'+pt+'</td><td>'+result+'</td></tr>';
-    }).join('')+'</tbody></table>';
+    ALL_PICKS_DATA=allpicks;
+    // Populate filter dropdown
+    var names=new Set();
+    allpicks.forEach(function(p){
+      names.add((p.picker_first||'')+' '+(p.picker_last||'').trim());
+      names.add((p.picked_first||'')+' '+(p.picked_last||'').trim());
+    });
+    var sel=document.getElementById('pick-filter');
+    sel.innerHTML='<option value="">All participants</option>';
+    Array.from(names).sort().forEach(function(n){
+      var o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);
+    });
+    filterPicks();
   }
 }
 </script>
