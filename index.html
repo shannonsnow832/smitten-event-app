@@ -125,12 +125,13 @@ var S='https://qgctltxcgsnbrdtbhmay.supabase.co';
 var AN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnY3RsdHhjZ3NuYnJkdGJobWF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMjgwNTcsImV4cCI6MjA5MDYwNDA1N30.-TS1CofnGMGAj38OrZAvtphbHPXQWZWtysO83_960M4';
 var EV='d2b033e6-a79f-44e1-8282-f030bea541c0';
 var OR='fc511c38-937d-4a1a-bfe2-28ce4c7c7744';
-var REDIRECT='https://shannonsnow832.github.io/smitten-event-app/';
 var SES=null,UID=null,PRF=null,PX={},ACH=null;
 
 function hd(x){return Object.assign({'Content-Type':'application/json',apikey:AN,Authorization:'Bearer '+(SES&&SES.t||AN)},x||{})}
 function api(p,o){return fetch(S+p,Object.assign({headers:hd()},o||{}))}
 function sv(v){['vl','vc','vm'].forEach(function(n){document.getElementById(n).style.display=n===v?'':'none'})}
+
+var REDIRECT='https://shannonsnow832.github.io/smitten-event-app/';
 
 async function doMagic(){
   var e=document.getElementById('ei').value.trim();
@@ -201,7 +202,7 @@ async function loadAtt(){
     var age=calcAge(a.date_of_birth);
     var ph=a.image_url||(a.photos&&a.photos[0])||'';
     var init=(a.first_name||'?')[0].toUpperCase();
-    var av=ph?'<img class="av" src="'+ph+'" alt="">':'<div class="av">'+init+'</div>';
+    var av=ph?'<img class="av" src="'+ph+'" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover">':'<div class="av">'+init+'</div>';
     return '<div class="row" id="r-'+a.id+'">'
       +'<div class="top">'+av+'<div>'
       +'<div style="font-size:15px;font-weight:600">'+(a.first_name||'Guest')+'</div>'
@@ -269,7 +270,7 @@ async function loadMatches(){
   if(!r.ok){mc.innerHTML='<div class="empty">Could not load matches.</div>';return;}
   var data=await r.json();
   if(!data||!data.length){
-    mc.innerHTML='<div class="card"><div class="empty" style="padding:2rem 0">&#10084;<br><br>Matches reveal at 9:30 PM tonight.<br><span style="font-size:12px">Check back after the event ends.</span></div></div>';
+    mc.innerHTML='<div class="card"><div class="empty" style="padding:2rem 0">&#10084;<br><br>&#10084;<br><br>Matches reveal at 9:30 PM tonight.<br><span style="font-size:12px">The event ends at 8:30 PM. Come back at 9:30 to see your matches!</span></div></div>';
     return;
   }
   var ids=data.map(function(m){return m.user_id===UID?m.matched_user_id:m.user_id;});

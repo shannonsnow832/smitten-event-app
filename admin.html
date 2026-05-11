@@ -3,342 +3,226 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Smitten Singles</title>
+<title>Smitten Singles Admin</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f7f7f7;color:#1a1a1a;min-height:100vh}
-.app{max-width:480px;margin:0 auto;padding:1.5rem 1rem}
-.logo{text-align:center;margin-bottom:1.5rem}
-.logo h1{font-size:22px;font-weight:700;color:#C6302C}
-.logo p{font-size:13px;color:#666;margin-top:4px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh}
+.app{max-width:640px;margin:0 auto;padding:1.5rem 1rem}
+h1{font-size:20px;font-weight:700;color:#C6302C}
+.sub{font-size:13px;color:#888;margin-bottom:1.5rem;margin-top:2px}
 .card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
-input{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:15px;background:#fafafa;color:#1a1a1a;outline:none;margin-bottom:10px}
+input{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fafafa;color:#1a1a1a;outline:none;margin-bottom:8px}
 input:focus{border-color:#C6302C}
-.btn{display:block;width:100%;padding:12px;background:#C6302C;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;text-align:center}
+.btn{padding:10px 18px;background:#C6302C;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
 .btn:hover{background:#a8231f}
 .btn:disabled{background:#ccc;cursor:not-allowed}
-.btn-gray{background:#888}
-.btn-gray:hover{background:#555}
-.nav{display:flex;border-bottom:1px solid #e8e8e8;margin-bottom:1rem;background:#fff;position:sticky;top:0;z-index:10}
-.nt{flex:1;padding:11px 4px;background:transparent;border:none;font-size:13px;cursor:pointer;color:#999;border-bottom:2px solid transparent}
-.nt.on{color:#C6302C;border-bottom-color:#C6302C;font-weight:600}
-.row{padding:12px 0;border-bottom:1px solid #f2f2f2}
-.row:last-child{border-bottom:none}
-.top{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.av{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#eee;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:#999}
-.opts{display:flex;gap:5px;padding-left:56px}
-.opt{flex:1;padding:6px 2px;border-radius:8px;border:1px solid #ddd;background:transparent;font-size:11px;font-weight:600;cursor:pointer;color:#999;text-align:center}
-.opt.sd{background:#C6302C;border-color:#C6302C;color:#fff}
-.opt.sf{background:#185FA5;border-color:#185FA5;color:#fff}
-.opt.sn{background:#777;border-color:#777;color:#fff}
-.opt.sx{background:#eee;border-color:#ddd;color:#999}
-.al{padding:10px 14px;border-radius:8px;font-size:14px;margin-bottom:10px}
+.btn-out{background:#fff;color:#C6302C;border:1px solid #C6302C}
+.btn-out:hover{background:#fdecea}
+.btn-g{background:#2e7d32}
+.btn-g:hover{background:#1b5e20}
+.btn-full{display:block;width:100%}
+.al{padding:10px 14px;border-radius:8px;font-size:14px;margin-top:8px}
 .ok{background:#e8f5e9;color:#2e7d32}
 .er{background:#fdecea;color:#b71c1c}
 .inf{background:#e3f2fd;color:#1565c0}
-.mrow{padding:12px 0;border-bottom:1px solid #f2f2f2}
-.mrow:last-child{border-bottom:none}
-.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600}
-.pd{background:#fdecea;color:#b71c1c}
-.pf{background:#e3f2fd;color:#1565c0}
-.cbtn{margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid #C6302C;background:transparent;color:#C6302C;font-size:13px;cursor:pointer;font-weight:500}
-.cbtn:hover{background:#C6302C;color:#fff}
-.bbl{padding:8px 12px;border-radius:16px;font-size:14px;max-width:78%;line-height:1.4;margin-bottom:4px}
-.bm{background:#C6302C;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
-.bt{background:#efefef;color:#1a1a1a;align-self:flex-start;border-bottom-left-radius:4px}
-.ts{font-size:11px;color:#bbb;text-align:center;margin:2px 0 8px}
-.ci{display:flex;gap:8px;margin-top:8px}
-.ci input{flex:1;margin:0}
-.sb2{padding:10px 14px;background:#C6302C;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:15px}
-.empty{text-align:center;padding:2rem 1rem;color:#999;font-size:14px}
-.sp{display:inline-block;width:16px;height:16px;border:2px solid rgba(198,48,44,.2);border-top-color:#C6302C;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:6px}
+.nav{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
+.nt{padding:8px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;font-size:14px;cursor:pointer;color:#888}
+.nt.on{background:#C6302C;color:#fff;border-color:#C6302C;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;color:#888;font-weight:600;padding:6px 8px;border-bottom:1px solid #eee}
+td{padding:8px;border-bottom:1px solid #f5f5f5;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.bi{background:#e8f5e9;color:#2e7d32}
+.br{background:#e3f2fd;color:#1565c0}
+.sp{display:inline-block;width:14px;height:14px;border:2px solid rgba(198,48,44,.2);border-top-color:#C6302C;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:4px}
 @keyframes sp{to{transform:rotate(360deg)}}
-.leg{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;font-size:12px;color:#888}
-.ld{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:4px}
-.pp{width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid #eee}
-.upbtn{margin-top:8px;padding:7px 14px;border:1px solid #C6302C;background:transparent;color:#C6302C;border-radius:8px;font-size:13px;cursor:pointer}
+.sl{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
 </style>
 </head>
 <body>
 <div class="app">
-<div class="logo"><h1>Smitten Singles</h1><p>Omaha Speed Dating &middot; Ages 35&ndash;55 &middot; May 12</p></div>
 
 <div id="vl">
-  <div class="card">
-    <p style="font-size:13px;font-weight:600;color:#888;margin-bottom:4px">SIGN IN</p>
-    <p style="font-size:14px;color:#666;margin-bottom:1rem">Enter your email to get a magic link. No password needed.</p>
-    <input type="email" id="ei" placeholder="your@email.com">
-    <button class="btn" id="lb" onclick="doMagic()">Send magic link</button>
-    <div id="lm" style="margin-top:10px"></div>
-  </div>
-  <p style="font-size:12px;color:#bbb;text-align:center">You must be registered for tonight's event.</p>
-</div>
-
-<div id="vc" style="display:none">
-  <div class="card" style="text-align:center;padding:2.5rem">
-    <span class="sp" style="width:24px;height:24px"></span>
-    <p style="margin-top:1rem;color:#888;font-size:14px">Signing you in&hellip;</p>
+  <div class="card" style="max-width:320px;margin:3rem auto">
+    <h1 style="margin-bottom:1rem">Admin Login</h1>
+    <input type="password" id="pw" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
+    <button class="btn btn-full" onclick="login()">Sign in</button>
+    <div id="le"></div>
   </div>
 </div>
 
-<div id="vm" style="display:none">
+<div id="va" style="display:none">
+  <h1>Event Admin</h1>
+  <p class="sub">Omaha Speed Dating &middot; May 12, 2026</p>
   <div class="nav">
-    <button class="nt on" id="tp" onclick="tab('p')">&#10084; Pick</button>
-    <button class="nt" id="tm" onclick="tab('m')">&#10024; Matches</button>
-    <button class="nt" id="tc" onclick="tab('c')">&#128172; Chat</button>
-    <button class="nt" id="tpr" onclick="tab('pr')">&#128100; Me</button>
+    <button class="nt on" id="na" onclick="sec('a')">Attendees</button>
+    <button class="nt" id="np" onclick="sec('p')">Add participant</button>
+    <button class="nt" id="nm" onclick="sec('m')">Release matches</button>
   </div>
 
-  <div id="pp">
-    <div id="pa"></div>
-    <div class="leg">
-      <span><span class="ld" style="background:#C6302C"></span>Date</span>
-      <span><span class="ld" style="background:#185FA5"></span>Friend</span>
-      <span><span class="ld" style="background:#777"></span>Not again</span>
-    </div>
-    <div class="card" style="padding:.75rem 1.25rem"><div id="al"><div class="empty"><span class="sp"></span></div></div></div>
-    <button class="btn" id="sb" onclick="savePicks()">Save my picks</button>
-    <p style="font-size:12px;color:#bbb;text-align:center;margin-top:8px">You can update picks until 9:30 PM tonight.</p>
-  </div>
-
-  <div id="pm" style="display:none"><div id="mc"><div class="empty"><span class="sp"></span></div></div></div>
-  <div id="pcc" style="display:none"><div id="ch"><div class="empty">Select a match to chat.</div></div></div>
-
-  <div id="ppr" style="display:none">
+  <div id="sa">
     <div class="card">
-      <p style="font-size:12px;font-weight:600;color:#888;margin-bottom:10px">MY PHOTO</p>
-      <div id="ppw"><div class="av" id="pph" style="width:80px;height:80px;font-size:28px">?</div></div>
-      <div style="margin-top:10px">
-        <input type="file" id="pf" accept="image/*" style="display:none;margin:0" onchange="upPhoto(this)">
-        <button class="upbtn" onclick="document.getElementById('pf').click()">&#128247; Upload photo</button>
-        <div id="phm" style="margin-top:8px;font-size:13px"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span class="sl">Registered attendees</span>
+        <button class="btn btn-out" style="padding:6px 12px;font-size:13px" onclick="loadAtt()">&#8635; Refresh</button>
       </div>
-      <p style="font-size:12px;color:#bbb;margin-top:10px">Your photo shows as a small thumbnail to other attendees.</p>
+      <div id="at"><div style="text-align:center;padding:1rem"><span class="sp"></span></div></div>
     </div>
-    <button class="btn btn-gray" onclick="signOut()">Sign out</button>
+  </div>
+
+  <div id="sp" style="display:none">
+    <div class="card">
+      <p class="sl">Add participant by email</p>
+      <p style="font-size:14px;color:#666;margin-bottom:12px">Looks up the profile and registers them to tonight's event.</p>
+      <input type="email" id="ae" placeholder="participant@email.com">
+      <button class="btn" onclick="addP()">Look up &amp; register</button>
+      <div id="am"></div>
+    </div>
+  </div>
+
+  <div id="sm" style="display:none">
+    <div class="card">
+      <p class="sl">Release matches</p>
+      <p style="font-size:14px;color:#666;margin-bottom:1rem">Computes all mutual Date+Date and Friend+Friend picks. Participants see matches immediately. Scheduled for <strong>9:30 PM tonight.</strong></p>
+      <button class="btn btn-g" style="padding:12px 24px;font-size:15px" onclick="doRelease()">&#10024; Compute &amp; release now</button>
+      <div id="mm"></div>
+    </div>
+    <div class="card">
+      <p class="sl">Pick totals</p>
+      <div id="ps"><span class="sp"></span></div>
+    </div>
+    <div class="card">
+      <p class="sl">Who has submitted picks</p>
+      <button class="btn btn-out" style="padding:6px 12px;font-size:13px;margin-bottom:12px" onclick="loadWhoSubmitted()">&#8635; Refresh</button>
+      <div id="ws"><span class="sp"></span></div>
+    </div>
   </div>
 </div>
-</div>
 
+</div>
 <script>
 var S='https://qgctltxcgsnbrdtbhmay.supabase.co';
 var AN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnY3RsdHhjZ3NuYnJkdGJobWF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMjgwNTcsImV4cCI6MjA5MDYwNDA1N30.-TS1CofnGMGAj38OrZAvtphbHPXQWZWtysO83_960M4';
 var EV='d2b033e6-a79f-44e1-8282-f030bea541c0';
-var OR='fc511c38-937d-4a1a-bfe2-28ce4c7c7744';
-var REDIRECT='https://shannonsnow832.github.io/smitten-event-app/';
-var SES=null,UID=null,PRF=null,PX={},ACH=null;
+var PASS='smitten2026';
 
-function hd(x){return Object.assign({'Content-Type':'application/json',apikey:AN,Authorization:'Bearer '+(SES&&SES.t||AN)},x||{})}
-function api(p,o){return fetch(S+p,Object.assign({headers:hd()},o||{}))}
-function sv(v){['vl','vc','vm'].forEach(function(n){document.getElementById(n).style.display=n===v?'':'none'})}
-
-async function doMagic(){
-  var e=document.getElementById('ei').value.trim();
-  if(!e)return;
-  var b=document.getElementById('lb');
-  b.disabled=true;b.innerHTML='<span class="sp"></span>Sending&hellip;';
-  var r=await fetch(S+'/auth/v1/otp',{method:'POST',headers:{'Content-Type':'application/json',apikey:AN},body:JSON.stringify({email:e,options:{emailRedirectTo:REDIRECT}})});
-  b.disabled=false;b.textContent='Send magic link';
-  document.getElementById('lm').innerHTML=r.ok?'<div class="al ok">Magic link sent! Check your email.</div>':'<div class="al er">Something went wrong. Try again.</div>';
-}
-
-async function init(){
-  sv('vc');
-  var st=localStorage.getItem('ss_s');
-  if(st){try{var d=JSON.parse(st);SES={t:d.t,r:d.r};}catch(e){}}
-  var h=location.hash;
-  if(h.indexOf('access_token')>-1){
-    var p=new URLSearchParams(h.slice(1));
-    var at=p.get('access_token'),rt=p.get('refresh_token');
-    if(at){
-      var u=await fetch(S+'/auth/v1/user',{headers:{apikey:AN,Authorization:'Bearer '+at}});
-      if(u.ok){SES={t:at,r:rt};localStorage.setItem('ss_s',JSON.stringify({t:at,r:rt}));history.replaceState(null,'',location.pathname);}
-    }
+function login(){
+  var p=document.getElementById('pw').value;
+  if(p===PASS){
+    document.getElementById('vl').style.display='none';
+    document.getElementById('va').style.display='';
+    loadAtt();
+  } else {
+    document.getElementById('le').innerHTML='<div class="al er">Wrong password.</div>';
   }
-  if(!SES){sv('vl');return;}
-  var ur=await fetch(S+'/auth/v1/user',{headers:{apikey:AN,Authorization:'Bearer '+SES.t}});
-  if(!ur.ok){localStorage.removeItem('ss_s');SES=null;sv('vl');return;}
-  UID=(await ur.json()).id;
-  sv('vm');
-  loadAtt();loadPicks();loadMe();
 }
 
-async function loadMe(){
-  var r=await api('/rest/v1/profiles?id=eq.'+UID+'&select=id,first_name,image_url,photos');
-  if(!r.ok)return;
-  var d=await r.json();
-  if(!d||!d.length)return;
-  PRF=d[0];
-  var ph=PRF.image_url||(PRF.photos&&PRF.photos[0])||'';
-  var init=(PRF.first_name||'?')[0].toUpperCase();
-  var w=document.getElementById('ppw');
-  if(ph)w.innerHTML='<img class="pp" src="'+ph+'" alt="">';
-  else document.getElementById('pph').textContent=init;
+function sec(s){
+  ['a','p','m'].forEach(function(n){
+    document.getElementById('s'+n).style.display=n===s?'':'none';
+    document.getElementById('n'+n).classList.toggle('on',n===s);
+  });
+  if(s==='m')loadPS();
 }
 
-async function upPhoto(inp){
-  var file=inp.files[0];if(!file)return;
-  var msg=document.getElementById('phm');
-  msg.innerHTML='<span class="sp"></span>Uploading&hellip;';
-  var fn=((PRF&&PRF.first_name)||'user').toLowerCase().replace(/\s+/g,'-');
-  var path=fn+'-'+UID.slice(0,8)+'/photo-1.jpeg';
-  var r=await fetch(S+'/storage/v1/object/profile-photos/'+path,{method:'POST',headers:{apikey:AN,Authorization:'Bearer '+SES.t,'Content-Type':file.type,'x-upsert':'true'},body:file});
-  if(!r.ok){msg.innerHTML='<span style="color:#b71c1c">Upload failed. Try again.</span>';return;}
-  var url=S+'/storage/v1/object/public/profile-photos/'+path;
-  await fetch(S+'/rest/v1/profiles?id=eq.'+UID,{method:'PATCH',headers:hd({Prefer:'return=minimal'}),body:JSON.stringify({image_url:url})});
-  document.getElementById('ppw').innerHTML='<img class="pp" src="'+url+'" alt="">';
-  msg.innerHTML='<span style="color:#2e7d32">Photo saved!</span>';
-  if(PRF)PRF.image_url=url;
+function hdrs(){return{apikey:AN,Authorization:'Bearer '+AN,'Content-Type':'application/json'}}
+
+async function rpc(fn,args){
+  var r=await fetch(S+'/rest/v1/rpc/'+fn,{method:'POST',headers:hdrs(),body:JSON.stringify(args)});
+  return r.json();
 }
 
 async function loadAtt(){
-  var r=await api('/rest/v1/rpc/event_attendees_for_caller',{method:'POST',body:JSON.stringify({p_event_id:EV})});
-  var el=document.getElementById('al');
-  if(!r.ok){el.innerHTML='<div class="empty">Could not load attendees.<br>Are you registered for this event?</div>';return;}
-  var d=await r.json();
-  if(!d||!d.length){el.innerHTML='<div class="empty">No other attendees yet.</div>';return;}
-  el.innerHTML=d.map(function(a){
-    var age=calcAge(a.date_of_birth);
-    var ph=a.image_url||(a.photos&&a.photos[0])||'';
-    var init=(a.first_name||'?')[0].toUpperCase();
-    var av=ph?'<img class="av" src="'+ph+'" alt="">':'<div class="av">'+init+'</div>';
-    return '<div class="row" id="r-'+a.id+'">'
-      +'<div class="top">'+av+'<div>'
-      +'<div style="font-size:15px;font-weight:600">'+(a.first_name||'Guest')+'</div>'
-      +(age?'<div style="font-size:13px;color:#888">Age '+age+'</div>':'')
-      +'</div></div>'
-      +'<div class="opts">'
-      +'<button class="opt" data-i="'+a.id+'" data-t="d" onclick="pk(\''+a.id+'\',\'d\')">&#10084; Date</button>'
-      +'<button class="opt" data-i="'+a.id+'" data-t="f" onclick="pk(\''+a.id+'\',\'f\')">&#128075; Friend</button>'
-      +'<button class="opt" data-i="'+a.id+'" data-t="n" onclick="pk(\''+a.id+'\',\'n\')">&#128683; Not again</button>'
-      +'<button class="opt" data-i="'+a.id+'" data-t="x" onclick="pk(\''+a.id+'\',\'x\')">&#8212; None</button>'
-      +'</div></div>';
-  }).join('');
-  rfr();
+  var el=document.getElementById('at');
+  el.innerHTML='<div style="text-align:center;padding:1rem"><span class="sp"></span></div>';
+  var d=await rpc('admin_get_registrations',{p_event_id:EV,p_admin_secret:PASS});
+  if(!d||!d.length){el.innerHTML='<p style="color:#999;text-align:center;padding:1.5rem">No registrations yet.</p>';return;}
+  el.innerHTML='<table><thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Action</th></tr></thead><tbody>'
+  +d.map(function(reg){
+    var name=((reg.first_name||'')+(reg.last_name?' '+reg.last_name:'')).trim()||'Unknown';
+    var ci=!!reg.checked_in_at;
+    return '<tr>'
+      +'<td style="font-weight:500">'+name+'</td>'
+      +'<td style="color:#888;font-size:13px">'+(reg.email||'')+'</td>'
+      +'<td><span class="badge '+(ci?'bi':'br')+'">'+(ci?'Checked in':'Registered')+'</span></td>'
+      +'<td>'+(ci
+        ?'<span style="color:#2e7d32;font-size:13px">&#10003; Done</span>'
+        :'<button class="btn btn-out" style="padding:4px 10px;font-size:12px" onclick="doCI(\''+reg.id+'\',this)">Check in</button>')
+      +'</td></tr>';
+  }).join('')+'</tbody></table>';
 }
 
-async function loadPicks(){
-  var r=await api('/rest/v1/event_picks?event_id=eq.'+EV+'&picker_id=eq.'+UID+'&select=picked_id,pick_type');
-  if(!r.ok)return;
-  var d=await r.json();
-  PX={};
-  d.forEach(function(p){
-    var t=p.pick_type==='date'?'d':p.pick_type==='friend'?'f':p.pick_type==='not_again'?'n':'x';
-    PX[p.picked_id]=t;
-  });
-  rfr();
+async function doCI(rid,btn){
+  btn.disabled=true;btn.textContent='...';
+  var d=await rpc('admin_checkin',{p_registration_id:rid,p_admin_secret:PASS});
+  if(d&&d.ok)loadAtt();
+  else{btn.disabled=false;btn.textContent='Check in';alert('Failed. Try again.');}
 }
 
-function pk(id,t){if(PX[id]===t){delete PX[id];}else{PX[id]=t;}rfr();}
-
-function rfr(){
-  document.querySelectorAll('.opt').forEach(function(b){
-    var i=b.dataset.i,t=b.dataset.t;
-    b.className='opt';
-    if(PX[i]===t)b.classList.add('s'+t);
-  });
-}
-
-async function savePicks(){
-  var b=document.getElementById('sb');
-  b.disabled=true;b.innerHTML='<span class="sp"></span>Saving&hellip;';
-  var ae=document.getElementById('pa');
-  try{
-    await fetch(S+'/rest/v1/event_picks?event_id=eq.'+EV+'&picker_id=eq.'+UID,{method:'DELETE',headers:hd()});
-    var map={d:'date',f:'friend',n:'not_again',x:'none'};
-    var rows=Object.entries(PX).filter(function(e){return e[1]!=='x';}).map(function(e){return{event_id:EV,picker_id:UID,picked_id:e[0],pick_type:map[e[1]]};});
-    if(rows.length)await fetch(S+'/rest/v1/event_picks',{method:'POST',headers:hd({Prefer:'return=minimal'}),body:JSON.stringify(rows)});
-    ae.innerHTML='<div class="al ok">Picks saved!</div>';
-    setTimeout(function(){ae.innerHTML=''},3000);
-  }catch(e){ae.innerHTML='<div class="al er">Error. Try again.</div>';}
-  b.disabled=false;b.textContent='Save my picks';
-}
-
-function calcAge(d){
-  if(!d)return null;
-  var b=new Date(d),n=new Date();
-  var a=n.getFullYear()-b.getFullYear();
-  if(n<new Date(n.getFullYear(),b.getMonth(),b.getDate()))a--;
-  return a;
-}
-
-async function loadMatches(){
-  var mc=document.getElementById('mc');
-  mc.innerHTML='<div class="empty"><span class="sp"></span></div>';
-  var r=await api('/rest/v1/matches?event_id=eq.'+EV+'&or=(user_id.eq.'+UID+',matched_user_id.eq.'+UID+')&status=eq.mutual&select=*');
-  if(!r.ok){mc.innerHTML='<div class="empty">Could not load matches.</div>';return;}
-  var data=await r.json();
-  if(!data||!data.length){
-    mc.innerHTML='<div class="card"><div class="empty" style="padding:2rem 0">&#10084;<br><br>Matches reveal at 9:30 PM tonight.<br><span style="font-size:12px">Check back after the event ends.</span></div></div>';
-    return;
+async function addP(){
+  var email=document.getElementById('ae').value.trim();
+  var msg=document.getElementById('am');
+  if(!email){msg.innerHTML='<div class="al er">Enter an email.</div>';return;}
+  msg.innerHTML='<div class="al inf"><span class="sp"></span> Looking up&hellip;</div>';
+  var d=await rpc('admin_lookup_and_register',{p_email:email,p_event_id:EV,p_admin_secret:PASS});
+  if(!d||!d.ok){
+    msg.innerHTML='<div class="al er">'+(d&&d.error?d.error:'Something went wrong.')+'</div>';
+  } else if(d.already_registered){
+    msg.innerHTML='<div class="al inf">'+(d.first_name||email)+' is already registered.</div>';
+  } else {
+    msg.innerHTML='<div class="al ok">'+(d.first_name||email)+' registered! Magic link will be sent when they sign in.</div>';
+    document.getElementById('ae').value='';
+    loadAtt();
   }
-  var ids=data.map(function(m){return m.user_id===UID?m.matched_user_id:m.user_id;});
-  var pr=await api('/rest/v1/profiles?id=in.('+ids.join(',')+')'+'&select=id,first_name,image_url,date_of_birth');
-  var ps=pr.ok?await pr.json():[];
-  var bi={};ps.forEach(function(p){bi[p.id]=p;});
-  mc.innerHTML='<div class="card" style="padding:.75rem 1.25rem">'+data.map(function(m){
-    var oi=m.user_id===UID?m.matched_user_id:m.user_id;
-    var p=bi[oi]||{};
-    var age=calcAge(p.date_of_birth);
-    var pl=m.match_type==='date'?'<span class="pill pd">Date</span>':m.match_type==='friend'?'<span class="pill pf">Friend</span>':'';
-    return '<div class="mrow"><div style="display:flex;align-items:center;gap:8px">'+pl
-      +'<span style="font-size:15px;font-weight:600">'+(p.first_name||'Your match')+'</span>'
-      +(age?'<span style="font-size:13px;color:#888">&middot; Age '+age+'</span>':'')
-      +'</div><button class="cbtn" onclick="openChat(\''+oi+'\',\''+encodeURIComponent(p.first_name||'Match')+'\')">&#128172; Chat</button></div>';
-  }).join('')+'</div>';
 }
 
-async function openChat(oid,name){
-  ACH=oid;tab('c');
-  document.getElementById('ch').innerHTML=
-    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem">'
-    +'<button onclick="closeCh()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#999">&#8592;</button>'
-    +'<span style="font-size:16px;font-weight:600">'+decodeURIComponent(name)+'</span></div>'
-    +'<div id="ml" style="min-height:200px;max-height:320px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column"></div>'
-    +'<div class="ci"><input type="text" id="mi" placeholder="Type a message&hellip;" onkeydown="if(event.key===\'Enter\')sendM(\''+oid+'\')"><button class="sb2" onclick="sendM(\''+oid+'\')">&#10148;</button></div>';
-  loadMsgs(oid);
-  if(window._cp)clearInterval(window._cp);
-  window._cp=setInterval(function(){if(ACH===oid)loadMsgs(oid);},6000);
+async function loadPS(){
+  var el=document.getElementById('ps');
+  var r=await fetch(S+'/rest/v1/event_picks?event_id=eq.'+EV+'&select=pick_type',{headers:hdrs()});
+  if(!r.ok){el.innerHTML='<p style="color:#999">Could not load.</p>';return;}
+  var d=await r.json();
+  var c={date:0,friend:0,not_again:0};
+  d.forEach(function(p){if(c[p.pick_type]!==undefined)c[p.pick_type]++;});
+  el.innerHTML='<table>'
+    +'<tr><td>Date picks</td><td><strong>'+c.date+'</strong></td></tr>'
+    +'<tr><td>Friend picks</td><td><strong>'+c.friend+'</strong></td></tr>'
+    +'<tr><td>Not again</td><td><strong>'+c.not_again+'</strong></td></tr>'
+    +'<tr><td style="color:#888">Total submitted</td><td><strong>'+(c.date+c.friend+c.not_again)+'</strong></td></tr>'
+    +'</table>';
+  loadWhoSubmitted();
 }
 
-async function loadMsgs(oid){
-  var r=await api('/rest/v1/messages?event_id=eq.'+EV+'&or=(and(sender_id.eq.'+UID+',recipient_id.eq.'+oid+'),and(sender_id.eq.'+oid+',recipient_id.eq.'+UID+'))&order=created_at.asc&select=*');
-  var el=document.getElementById('ml');
+async function loadWhoSubmitted(){
+  var el=document.getElementById('ws');
   if(!el)return;
-  if(!r.ok){el.innerHTML='<div class="empty">Could not load messages.</div>';return;}
-  var msgs=await r.json();
-  if(!msgs||!msgs.length){el.innerHTML='<div class="empty">No messages yet. Say hello!</div>';return;}
-  var atBot=el.scrollHeight-el.scrollTop<=el.clientHeight+50;
-  el.innerHTML=msgs.map(function(m){
-    var mine=m.sender_id===UID;
-    var t=new Date(m.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    return '<div><div class="bbl '+(mine?'bm':'bt')+'">'+m.content+'</div><div class="ts">'+t+'</div></div>';
-  }).join('');
-  if(atBot)el.scrollTop=el.scrollHeight;
+  var d=await rpc('admin_get_registrations',{p_event_id:EV,p_admin_secret:PASS});
+  if(!d||!d.length){el.innerHTML='<p style="color:#999">No registrations.</p>';return;}
+  var picks=await fetch(S+'/rest/v1/event_picks?event_id=eq.'+EV+'&select=picker_id',{headers:hdrs()});
+  var pd=picks.ok?await picks.json():[];
+  var submitted=new Set(pd.map(function(p){return p.picker_id;}));
+  var total=d.length;
+  var done=d.filter(function(r){return submitted.has(r.profile_id);}).length;
+  el.innerHTML='<p style="font-size:14px;color:#555;margin-bottom:10px"><strong>'+done+' of '+total+'</strong> participants have submitted picks.</p>'
+    +'<table><thead><tr><th>Name</th><th>Picks submitted</th></tr></thead><tbody>'
+    +d.map(function(reg){
+      var name=((reg.first_name||'')+(reg.last_name?' '+reg.last_name:'')).trim()||'Unknown';
+      var has=submitted.has(reg.profile_id);
+      return '<tr><td>'+name+'</td><td>'+(has?'<span style="color:#2e7d32;font-weight:600">&#10003; Yes</span>':'<span style="color:#b71c1c">&#8212; Not yet</span>')+'</td></tr>';
+    }).join('')+'</tbody></table>';
 }
 
-async function sendM(oid){
-  var inp=document.getElementById('mi');
-  var txt=inp&&inp.value&&inp.value.trim();
-  if(!txt)return;
-  inp.value='';
-  await fetch(S+'/rest/v1/messages',{method:'POST',headers:hd({Prefer:'return=minimal'}),body:JSON.stringify({event_id:EV,sender_id:UID,recipient_id:oid,content:txt})});
-  loadMsgs(oid);
+async function doRelease(){
+  var msg=document.getElementById('mm');
+  msg.innerHTML='<div class="al inf"><span class="sp"></span> Computing matches&hellip;</div>';
+  try{
+    var d=await rpc('release_event_matches',{p_event_id:EV,p_admin_secret:PASS});
+    if(!d||d.error)throw new Error(d&&d.error?d.error:'RPC failed');
+    msg.innerHTML='<div class="al ok">&#10024; Done! '+d.matches+' mutual match(es) released.</div>';
+  }catch(e){
+    msg.innerHTML='<div class="al er">Error: '+e.message+'</div>';
+  }
 }
-
-function closeCh(){ACH=null;if(window._cp)clearInterval(window._cp);document.getElementById('ch').innerHTML='<div class="empty">Select a match to chat.</div>';tab('m');}
-
-function tab(t){
-  ['p','m','c','pr'].forEach(function(n){
-    document.getElementById('p'+n).style.display=n===t?'':'none';
-    document.getElementById('t'+n).classList.toggle('on',n===t);
-  });
-  if(t==='m')loadMatches();
-}
-
-function signOut(){localStorage.removeItem('ss_s');SES=null;UID=null;sv('vl');}
-
-init();
 </script>
 </body>
 </html>
