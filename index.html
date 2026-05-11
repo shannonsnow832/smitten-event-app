@@ -183,14 +183,26 @@ async function init(){
   sv('vc');
   var st=localStorage.getItem('ss_s');
   if(st){try{var d=JSON.parse(st);SES={t:d.t,r:d.r};}catch(e){}}
-  var h=location.hash;
-  if(h.indexOf('access_token')>-1){
-    var p=new URLSearchParams(h.slice(1));
-    var at=p.get('access_token'),rt=p.get('refresh_token');
-    if(at){
-      var u=await fetch(S+'/auth/v1/user',{headers:{apikey:AN,Authorization:'Bearer '+at}});
-      if(u.ok){SES={t:at,r:rt};localStorage.setItem('ss_s',JSON.stringify({t:at,r:rt}));history.replaceState(null,'',location.pathname);}
-    }
+  // Handle hash token, query token, and PKCE code
+  var h=location.hash||'';
+  var q=location.search||'';
+  var hp=new URLSearchParams(h.slice(1));
+  var qp=new URLSearchParams(q.slice(1));
+  var at=hp.get('access_token')||qp.get('access_token');
+  var rt=hp.get('refresh_token')||qp.get('refresh_token');
+  var code=qp.get('code');
+  var otp_token=qp.get('token');
+  var otp_email=qp.get('email');
+  if(at){
+    var u=await fetch(S+'/auth/v1/user',{headers:{apikey:AN,Authorization:'Bearer '+at}});
+    if(u.ok){SES={t:at,r:rt};localStorage.setItem('ss_s',JSON.stringify({t:at,r:rt}));history.replaceState(null,'',location.pathname);}
+  } else if(otp_token&&otp_email){
+    // Admin-generated magic link token
+    var ex=await fetch(S+'/auth/v1/verify',{method:'POST',headers:{'Content-Type':'application/json',apikey:AN},body:JSON.stringify({token:otp_token,type:'magiclink',email:otp_email})});
+    if(ex.ok){var ed=await ex.json();if(ed.access_token){SES={t:ed.access_token,r:ed.refresh_token};localStorage.setItem('ss_s',JSON.stringify({t:ed.access_token,r:ed.refresh_token}));history.replaceState(null,'',location.pathname);}}
+  } else if(code){
+    var ex=await fetch(S+'/auth/v1/token?grant_type=pkce',{method:'POST',headers:{'Content-Type':'application/json',apikey:AN},body:JSON.stringify({auth_code:code,code_verifier:sessionStorage.getItem('pkce_verifier')||''})});
+    if(ex.ok){var ed=await ex.json();if(ed.access_token){SES={t:ed.access_token,r:ed.refresh_token};localStorage.setItem('ss_s',JSON.stringify({t:ed.access_token,r:ed.refresh_token}));history.replaceState(null,'',location.pathname);}}
   }
   if(!SES){sv('vl');return;}
   var ur=await fetch(S+'/auth/v1/user',{headers:{apikey:AN,Authorization:'Bearer '+SES.t}});

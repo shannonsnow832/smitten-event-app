@@ -185,9 +185,10 @@ async function loadAtt(){
       +'<td style="font-weight:500">'+name+'</td>'
       +'<td style="color:#888;font-size:13px">'+(reg.email||'')+'</td>'
       +'<td><span class="badge '+(ci?'bi':'br')+'">'+(ci?'Checked in':'Registered')+'</span></td>'
-      +'<td>'+(ci
+      +'<td style="display:flex;gap:4px;flex-wrap:wrap">'+(ci
         ?'<button class="btn btn-out" style="padding:4px 10px;font-size:12px;border-color:#888;color:#888" onclick="doCO(\''+reg.id+'\',this)">Check out</button>'
         :'<button class="btn btn-out" style="padding:4px 10px;font-size:12px" onclick="doCI(\''+reg.id+'\',this)">Check in</button>')
+      +'<button class="btn btn-out" style="padding:4px 10px;font-size:12px;border-color:#2e7d32;color:#2e7d32" onclick="loginAs(\''+reg.email+'\',this)">Login as</button>'
       +'</td></tr>';
   }).join('')+'</tbody></table>';
 }
@@ -317,6 +318,15 @@ function filterPicks(){
     var result=p.is_mutual?'<span style="color:#2e7d32;font-weight:600">&#10024; Mutual</span>':'<span style="color:#aaa">One-sided</span>';
     return '<tr><td style="font-weight:500">'+(p.picker_first||'')+' '+(p.picker_last||'')+'</td><td>'+(p.picked_first||'')+' '+(p.picked_last||'')+'</td><td>'+pt+'</td><td>'+result+'</td></tr>';
   }).join('')+'</tbody></table>';
+}
+
+async function loginAs(email, btn){
+  btn.disabled=true;btn.textContent='...';
+  var d=await rpc('admin_generate_magic_link',{p_email:email,p_admin_secret:PASS});
+  btn.disabled=false;btn.textContent='Login as';
+  if(!d||!d.ok){alert('Could not generate link: '+(d&&d.error||'unknown error'));return;}
+  var url='https://event-app.smittensingles.com?token='+d.token+'&type=magiclink&email='+encodeURIComponent(d.email);
+  window.open(url,'_blank');
 }
 
 function adminOut(){document.getElementById('va').style.display='none';document.getElementById('vl').style.display='';document.getElementById('pw').value='';}
