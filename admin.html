@@ -188,6 +188,7 @@ async function loadAtt(){
     return '<tr>'
       +'<td style="font-weight:500">'+name+'</td>'
       +'<td style="color:#888;font-size:13px">'+(reg.email||'')+'</td>'
+      +'<td>'+(reg.image_url?'<span style="color:#2e7d32;font-size:13px">&#10003;</span>':'<span style="color:#ddd;font-size:13px">&#8212;</span>')+'</td>'
       +'<td><span class="badge '+(ci?'bi':'br')+'">'+(ci?'Checked in':'Registered')+'</span></td>'
       +'<td><div class="actions">'+(ci
         ?'<button class="btn btn-gray" style="font-size:12px;padding:5px 10px" onclick="doCO(\''+reg.id+'\',this)">Check out</button>'
