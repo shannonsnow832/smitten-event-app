@@ -329,6 +329,14 @@ async function loginAs(email, btn){
   window.open('https://event-app.smittensingles.com/pick.html?email='+encodeURIComponent(email),'_blank');
 }
 
+async function removeP(rid, name, btn){
+  if(!confirm('Remove '+name+' from the event?'))return;
+  btn.disabled=true;btn.textContent='...';
+  var d=await rpc('admin_remove_registration',{p_registration_id:rid,p_admin_secret:PASS});
+  if(d&&d.ok)loadAtt();
+  else{btn.disabled=false;btn.textContent='Remove';alert('Failed. Try again.');}
+}
+
 function adminOut(){document.getElementById('va').style.display='none';document.getElementById('vl').style.display='';document.getElementById('pw').value='';}
 
 async function loadResults(){

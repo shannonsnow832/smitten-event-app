@@ -81,6 +81,14 @@ input:focus,select:focus{border-color:#C6302C}
     <div id="rlm" style="margin-top:10px"></div>
     <button class="tlink tlink-gray" onclick="showLogin()">Back to sign in</button>
   </div>
+  <div class="card" id="card-newpwd" style="display:none">
+    <p class="sl">Set your password</p>
+    <p style="font-size:14px;color:#666;margin-bottom:12px">Choose a password to use for future logins.</p>
+    <input type="password" id="np1" placeholder="New password" onkeydown="if(event.key==='Enter')doSetPwd()">
+    <input type="password" id="np2" placeholder="Confirm password" onkeydown="if(event.key==='Enter')doSetPwd()">
+    <button class="btn" id="npb" onclick="doSetPwd()">Set password &amp; sign in</button>
+    <div id="npm" style="margin-top:10px"></div>
+  </div>
   <p style="font-size:12px;color:#bbb;text-align:center;margin-top:8px">You must be registered for tonight's event.</p>
 </div>
 
@@ -161,6 +169,24 @@ function sv(v){['vl','vc','vm'].forEach(function(n){document.getElementById(n).s
 function showReset(){document.getElementById('card-login').style.display='none';document.getElementById('card-reset').style.display='';}
 function showLogin(){document.getElementById('card-reset').style.display='none';document.getElementById('card-login').style.display='';}
 
+async function doSetPwd(){
+  var p1=document.getElementById('np1').value;
+  var p2=document.getElementById('np2').value;
+  var msg=document.getElementById('npm');
+  if(!p1||p1.length<6){msg.innerHTML='<div class="al er">Password must be at least 6 characters.</div>';return;}
+  if(p1!==p2){msg.innerHTML='<div class="al er">Passwords don't match.</div>';return;}
+  var b=document.getElementById('npb');
+  b.disabled=true;b.innerHTML='<span class="sp"></span>Saving&hellip;';
+  var r=await fetch(S+'/auth/v1/user',{method:'PUT',headers:{'Content-Type':'application/json',apikey:AN,Authorization:'Bearer '+SES.t},body:JSON.stringify({password:p1})});
+  if(!r.ok){b.disabled=false;b.textContent='Set password & sign in';msg.innerHTML='<div class="al er">Error setting password. Try again.</div>';return;}
+  localStorage.setItem('ss_s',JSON.stringify({t:SES.t,r:SES.r}));
+  var ur=await fetch(S+'/auth/v1/user',{headers:{apikey:AN,Authorization:'Bearer '+SES.t}});
+  UID=(await ur.json()).id;
+  sv('vm');
+  checkMatchesReleased();
+  loadAtt();loadPicks();loadMe();
+}
+
 async function doLogin(){
   var e=document.getElementById('ei').value.trim();
   var p=document.getElementById('pi').value;
@@ -221,7 +247,17 @@ async function init(){
   var qp=new URLSearchParams(q.slice(1));
   var at=hp.get('access_token')||qp.get('access_token');
   var rt=hp.get('refresh_token')||qp.get('refresh_token');
+  var tokenType=hp.get('type')||qp.get('type')||'';
   if(at){
+    if(tokenType==='recovery'){
+      // Password reset flow — show set password form
+      SES={t:at,r:rt};
+      history.replaceState(null,'',location.pathname);
+      sv('vl');
+      ['card-login','card-reset'].forEach(function(id){document.getElementById(id).style.display='none';});
+      document.getElementById('card-newpwd').style.display='';
+      return;
+    }
     var u=await fetch(S+'/auth/v1/user',{headers:{apikey:AN,Authorization:'Bearer '+at}});
     if(u.ok){SES={t:at,r:rt};localStorage.setItem('ss_s',JSON.stringify({t:at,r:rt}));history.replaceState(null,'',location.pathname);}
   }
