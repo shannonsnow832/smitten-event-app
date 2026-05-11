@@ -92,6 +92,7 @@ input:focus{border-color:#C6302C}
     <button class="nt" id="tm" onclick="tab('m')">&#10024; Matches</button>
     <button class="nt" id="tc" onclick="tab('c')">&#128172; Chat</button>
     <button class="nt" id="tpr" onclick="tab('pr')">&#128100; Me</button>
+    <button class="nt" onclick="signOut()" style="flex:none;padding:11px 12px;color:#888;">&#x2192;</button>
   </div>
 
   <div id="pp">
@@ -103,7 +104,7 @@ input:focus{border-color:#C6302C}
     </div>
     <div class="card" style="padding:.75rem 1.25rem"><div id="al"><div class="empty"><span class="sp"></span></div></div></div>
     <button class="btn" id="sb" onclick="savePicks()">Save my picks</button>
-    <p style="font-size:12px;color:#bbb;text-align:center;margin-top:8px">You can update picks until 9:30 PM tonight.</p>
+    <p style="font-size:12px;color:#bbb;text-align:center;margin-top:8px">You can update your picks until the event ends.</p>
   </div>
 
   <div id="pm" style="display:none"><div id="mc"></div></div>
@@ -120,7 +121,7 @@ input:focus{border-color:#C6302C}
       </div>
       <p style="font-size:12px;color:#bbb;margin-top:10px">Your photo shows as a small thumbnail to other attendees.</p>
     </div>
-    <button class="btn btn-gray" onclick="signOut()">Sign out</button>
+    <button class="btn" style="background:#888;margin-top:8px" onclick="signOut()">Sign out of event</button>
   </div>
 </div>
 </div>
@@ -219,7 +220,7 @@ async function loadAtt(){
     return '<div class="row" id="r-'+a.id+'">'
       +'<div class="top">'+av+'<div>'
       +'<div style="font-size:15px;font-weight:600">'+(a.first_name||'Guest')+'</div>'
-      +(age?'<div style="font-size:13px;color:#888">Age '+age+'</div>':'')
+      
       +'</div></div>'
       +'<div class="opts">'
       +'<button class="opt" data-i="'+a.id+'" data-t="d" onclick="pk(\''+a.id+'\',\'d\')">&#10084; Date</button>'
