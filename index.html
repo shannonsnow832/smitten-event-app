@@ -406,7 +406,7 @@ async function loadChats(){
     var displayName=(p.first_name||'Match')+(lastInit?' '+lastInit:'');
     var ph=p.image_url?'<img class="av" src="'+p.image_url+'" alt="">':'<div class="av">'+(p.first_name||'?')[0].toUpperCase()+'</div>';
     var pl=m.match_type==='date'?'<span class="pill pd" style="font-size:10px">Date</span>':'<span class="pill pf" style="font-size:10px">Friend</span>';
-    return '<div class="row" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 0" onclick="openChat(''+oi+'',''+encodeURIComponent(displayName)+'')">'
+    return '<div class="row" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 0" onclick="openChat(\''+oi+'\',\''+encodeURIComponent(displayName)+'\')">'
       +ph
       +'<div style="flex:1"><div style="display:flex;align-items:center;gap:6px"><span style="font-size:15px;font-weight:600">'+displayName+'</span>'+pl+'</div>'
       +'<div style="font-size:13px;color:#999;margin-top:2px">Tap to chat</div></div>'
