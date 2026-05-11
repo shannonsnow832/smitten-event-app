@@ -7,37 +7,41 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh}
-.app{max-width:640px;margin:0 auto;padding:1.5rem 1rem}
+.app{max-width:700px;margin:0 auto;padding:1.5rem 1rem}
 h1{font-size:20px;font-weight:700;color:#C6302C}
 .sub{font-size:13px;color:#888;margin-bottom:1.5rem;margin-top:2px}
 .card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
-input{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fafafa;color:#1a1a1a;outline:none;margin-bottom:8px}
-input:focus{border-color:#C6302C}
-.btn{padding:10px 18px;background:#C6302C;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+input,select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fafafa;color:#1a1a1a;outline:none;margin-bottom:8px}
+input:focus,select:focus{border-color:#C6302C}
+.btn{padding:8px 16px;background:#C6302C;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
 .btn:hover{background:#a8231f}
 .btn:disabled{background:#ccc;cursor:not-allowed}
 .btn-out{background:#fff;color:#C6302C;border:1px solid #C6302C}
 .btn-out:hover{background:#fdecea}
-.btn-g{background:#2e7d32}
+.btn-g{background:#2e7d32;color:#fff;border:none}
 .btn-g:hover{background:#1b5e20}
+.btn-gray{background:#888;color:#fff;border:none}
 .btn-full{display:block;width:100%}
 .al{padding:10px 14px;border-radius:8px;font-size:14px;margin-top:8px}
 .ok{background:#e8f5e9;color:#2e7d32}
 .er{background:#fdecea;color:#b71c1c}
 .inf{background:#e3f2fd;color:#1565c0}
-.nav{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
-.nt{padding:8px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;font-size:14px;cursor:pointer;color:#888}
+.nav{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap}
+.nt{padding:8px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;font-size:13px;cursor:pointer;color:#888;white-space:nowrap}
 .nt.on{background:#C6302C;color:#fff;border-color:#C6302C;font-weight:600}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th{text-align:left;font-size:12px;color:#888;font-weight:600;padding:6px 8px;border-bottom:1px solid #eee}
-td{padding:8px;border-bottom:1px solid #f5f5f5;vertical-align:middle}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;color:#999;font-weight:600;padding:6px 8px;border-bottom:1px solid #eee;text-transform:uppercase;letter-spacing:.04em}
+td{padding:10px 8px;border-bottom:1px solid #f5f5f5;vertical-align:middle}
 tr:last-child td{border-bottom:none}
-.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}
+.av-sm{width:32px;height:32px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:8px}
+.av-init{width:32px;height:32px;border-radius:50%;background:#eee;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#888;vertical-align:middle;margin-right:8px}
+.badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
 .bi{background:#e8f5e9;color:#2e7d32}
-.br{background:#e3f2fd;color:#1565c0}
+.br{background:#fff3e0;color:#e65100}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
 .sp{display:inline-block;width:14px;height:14px;border:2px solid rgba(198,48,44,.2);border-top-color:#C6302C;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:4px}
 @keyframes sp{to{transform:rotate(360deg)}}
-.sl{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.sl{font-size:11px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
 </style>
 </head>
 <body>
@@ -185,11 +189,11 @@ async function loadAtt(){
       +'<td style="font-weight:500">'+name+'</td>'
       +'<td style="color:#888;font-size:13px">'+(reg.email||'')+'</td>'
       +'<td><span class="badge '+(ci?'bi':'br')+'">'+(ci?'Checked in':'Registered')+'</span></td>'
-      +'<td style="display:flex;gap:4px;flex-wrap:wrap">'+(ci
-        ?'<button class="btn btn-out" style="padding:4px 10px;font-size:12px;border-color:#888;color:#888" onclick="doCO(\''+reg.id+'\',this)">Check out</button>'
-        :'<button class="btn btn-out" style="padding:4px 10px;font-size:12px" onclick="doCI(\''+reg.id+'\',this)">Check in</button>')
-      +'<button class="btn btn-out" style="padding:4px 10px;font-size:12px;border-color:#2e7d32;color:#2e7d32" onclick="loginAs(\''+reg.email+'\',this)">Login as</button>'
-      +'</td></tr>';
+      +'<td><div class="actions">'+(ci
+        ?'<button class="btn btn-gray" style="font-size:12px;padding:5px 10px" onclick="doCO(\''+reg.id+'\',this)">Check out</button>'
+        :'<button class="btn" style="font-size:12px;padding:5px 10px" onclick="doCI(\''+reg.id+'\',this)">Check in</button>')
+      +'<button class="btn btn-out" style="font-size:12px;padding:5px 10px;border-color:#2e7d32;color:#2e7d32" onclick="loginAs(\''+reg.email+'\',this)">Login as</button>'
+      +'</div></td></tr>';
   }).join('')+'</tbody></table>';
 }
 

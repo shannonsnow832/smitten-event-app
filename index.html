@@ -65,12 +65,25 @@ input:focus,select:focus{border-color:#C6302C}
 <div class="logo"><h1>Smitten Singles</h1><p>Omaha Speed Dating &middot; Ages 35&ndash;55 &middot; May 11</p></div>
 
 <div id="vl">
-  <div class="card">
+  <div class="card" id="card-login">
     <p class="sl">Sign in</p>
-    <p style="font-size:14px;color:#666;margin-bottom:1rem">Enter your email to get a magic link. No password needed.</p>
     <input type="email" id="ei" placeholder="your@email.com">
-    <button class="btn" id="lb" onclick="doMagic()">Send magic link</button>
+    <input type="password" id="pi" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()" style="margin-bottom:10px">
+    <button class="btn" id="lb" onclick="doLogin()">Sign in</button>
+    <div style="text-align:center;margin-top:12px">
+      <button onclick="showReset()" style="background:none;border:none;color:#C6302C;font-size:13px;cursor:pointer;text-decoration:underline">First time? Get a login link</button>
+    </div>
     <div id="lm" style="margin-top:10px"></div>
+  </div>
+  <div class="card" id="card-reset" style="display:none">
+    <p class="sl">Get a login link</p>
+    <p style="font-size:14px;color:#666;margin-bottom:1rem">Enter your email and we'll send you a link to set your password.</p>
+    <input type="email" id="rei" placeholder="your@email.com">
+    <button class="btn" id="rlb" onclick="doReset()">Send login link</button>
+    <div style="text-align:center;margin-top:12px">
+      <button onclick="showLogin()" style="background:none;border:none;color:#888;font-size:13px;cursor:pointer;text-decoration:underline">Back to sign in</button>
+    </div>
+    <div id="rlm" style="margin-top:10px"></div>
   </div>
   <p style="font-size:12px;color:#bbb;text-align:center">You must be registered for tonight's event.</p>
 </div>
