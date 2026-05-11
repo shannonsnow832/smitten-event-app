@@ -53,7 +53,10 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <div id="va" style="display:none">
-  <h1>Event Admin</h1>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+    <h1>Event Admin</h1>
+    <button class="btn" style="background:#888;padding:7px 14px;font-size:13px" onclick="adminOut()">Sign out</button>
+  </div>
   <p class="sub">Omaha Speed Dating &middot; May 12, 2026</p>
   <div class="nav">
     <button class="nt on" id="na" onclick="sec('a')">Attendees</button>
@@ -264,6 +267,7 @@ async function doRelease(){
     msg.innerHTML='<div class="al er">Error: '+e.message+'</div>';
   }
 }
+function adminOut(){document.getElementById('va').style.display='none';document.getElementById('vl').style.display='';document.getElementById('pw').value='';}
 </script>
 </body>
 </html>
