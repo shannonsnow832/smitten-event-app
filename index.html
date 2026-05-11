@@ -174,7 +174,7 @@ async function doSetPwd(){
   var p2=document.getElementById('np2').value;
   var msg=document.getElementById('npm');
   if(!p1||p1.length<6){msg.innerHTML='<div class="al er">Password must be at least 6 characters.</div>';return;}
-  if(p1!==p2){msg.innerHTML='<div class="al er">Passwords don't match.</div>';return;}
+  if(p1!==p2){msg.innerHTML='<div class="al er">Passwords do not match.</div>';return;}
   var b=document.getElementById('npb');
   b.disabled=true;b.innerHTML='<span class="sp"></span>Saving&hellip;';
   var r=await fetch(S+'/auth/v1/user',{method:'PUT',headers:{'Content-Type':'application/json',apikey:AN,Authorization:'Bearer '+SES.t},body:JSON.stringify({password:p1})});
