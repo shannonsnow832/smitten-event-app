@@ -61,7 +61,7 @@ input:focus{border-color:#C6302C}
 </head>
 <body>
 <div class="app">
-<div class="logo"><h1>Smitten Singles</h1><p>Omaha Speed Dating &middot; Ages 35&ndash;55 &middot; May 12</p></div>
+<div class="logo"><h1>Smitten Singles</h1><p>Omaha Speed Dating &middot; Ages 35&ndash;55 &middot; May 11</p></div>
 
 <div id="vl">
   <div class="card">
@@ -101,7 +101,7 @@ input:focus{border-color:#C6302C}
     <p style="font-size:12px;color:#bbb;text-align:center;margin-top:8px">You can update picks until 9:30 PM tonight.</p>
   </div>
 
-  <div id="pm" style="display:none"><div id="mc"><div class="empty"><span class="sp"></span></div></div></div>
+  <div id="pm" style="display:none"><div id="mc"></div></div>
   <div id="pcc" style="display:none"><div id="ch"><div class="empty">Select a match to chat.</div></div></div>
 
   <div id="ppr" style="display:none">
@@ -137,7 +137,15 @@ async function doMagic(){
   var e=document.getElementById('ei').value.trim();
   if(!e)return;
   var b=document.getElementById('lb');
-  b.disabled=true;b.innerHTML='<span class="sp"></span>Sending&hellip;';
+  b.disabled=true;b.innerHTML='<span class="sp"></span>Checking&hellip;';
+  var chk=await fetch(S+'/rest/v1/rpc/check_event_registration',{method:'POST',headers:{'Content-Type':'application/json',apikey:AN},body:JSON.stringify({p_email:e,p_event_id:EV})});
+  var cd=await chk.json();
+  if(!chk.ok||!cd.registered){
+    b.disabled=false;b.textContent='Send magic link';
+    document.getElementById('lm').innerHTML='<div class="al er">This email isn\'t registered for tonight\'s event. Please see your host.</div>';
+    return;
+  }
+  b.innerHTML='<span class="sp"></span>Sending&hellip;';
   var r=await fetch(S+'/auth/v1/otp',{method:'POST',headers:{'Content-Type':'application/json',apikey:AN},body:JSON.stringify({email:e,options:{emailRedirectTo:REDIRECT}})});
   b.disabled=false;b.textContent='Send magic link';
   document.getElementById('lm').innerHTML=r.ok?'<div class="al ok">Magic link sent! Check your email.</div>':'<div class="al er">Something went wrong. Try again.</div>';
@@ -265,14 +273,11 @@ function calcAge(d){
 
 async function loadMatches(){
   var mc=document.getElementById('mc');
-  mc.innerHTML='<div class="empty"><span class="sp"></span></div>';
+  mc.innerHTML='<div class="card"><div class="empty" style="padding:2rem 0">&#10084;<br><br>Matches reveal at 9:30 PM tonight.<br><span style="font-size:12px">The event ends at 8:30 PM. Come back at 9:30!</span></div></div>';
   var r=await api('/rest/v1/matches?event_id=eq.'+EV+'&or=(user_id.eq.'+UID+',matched_user_id.eq.'+UID+')&status=eq.mutual&select=*');
-  if(!r.ok){mc.innerHTML='<div class="empty">Could not load matches.</div>';return;}
+  if(!r.ok){return;}
   var data=await r.json();
-  if(!data||!data.length){
-    mc.innerHTML='<div class="card"><div class="empty" style="padding:2rem 0">&#10084;<br><br>&#10084;<br><br>Matches reveal at 9:30 PM tonight.<br><span style="font-size:12px">The event ends at 8:30 PM. Come back at 9:30 to see your matches!</span></div></div>';
-    return;
-  }
+  if(!data||!data.length){return;}
   var ids=data.map(function(m){return m.user_id===UID?m.matched_user_id:m.user_id;});
   var pr=await api('/rest/v1/profiles?id=in.('+ids.join(',')+')'+'&select=id,first_name,image_url,date_of_birth');
   var ps=pr.ok?await pr.json():[];
@@ -330,9 +335,11 @@ async function sendM(oid){
 function closeCh(){ACH=null;if(window._cp)clearInterval(window._cp);document.getElementById('ch').innerHTML='<div class="empty">Select a match to chat.</div>';tab('m');}
 
 function tab(t){
-  ['p','m','c','pr'].forEach(function(n){
-    document.getElementById('p'+n).style.display=n===t?'':'none';
-    document.getElementById('t'+n).classList.toggle('on',n===t);
+  var panels={'p':'pp','m':'pm','c':'pcc','pr':'ppr'};
+  var tabs={'p':'tp','m':'tm','c':'tc','pr':'tpr'};
+  Object.keys(panels).forEach(function(n){
+    document.getElementById(panels[n]).style.display=n===t?'':'none';
+    document.getElementById(tabs[n]).classList.toggle('on',n===t);
   });
   if(t==='m')loadMatches();
 }
