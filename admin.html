@@ -268,7 +268,8 @@ async function loadWhoSubmitted(submitterIds){
   if(!el)return;
   var d=await rpc('admin_get_registrations',{p_event_id:EV,p_admin_secret:PASS});
   if(!d||!d.length){el.innerHTML='<p style="color:#999">No registrations.</p>';return;}
-  var submitted=new Set(submitterIds||[]);
+  var submitterArr=Array.isArray(submitterIds)?submitterIds:(submitterIds?Object.values(submitterIds):[]);
+  var submitted=new Set(submitterArr);
   var total=d.length;
   var done=d.filter(function(r){return submitted.has(r.profile_id);}).length;
   el.innerHTML='<p style="font-size:14px;color:#555;margin-bottom:10px"><strong>'+done+' of '+total+'</strong> participants have submitted picks.</p>'
