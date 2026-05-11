@@ -74,10 +74,19 @@ tr:last-child td{border-bottom:none}
   <div id="sp" style="display:none">
     <div class="card">
       <p class="sl">Add participant by email</p>
-      <p style="font-size:14px;color:#666;margin-bottom:12px">Looks up the profile and registers them to tonight's event.</p>
+      <p style="font-size:14px;color:#666;margin-bottom:12px">Looks up existing profile and registers them. If not found, you can create them on the spot.</p>
       <input type="email" id="ae" placeholder="participant@email.com">
       <button class="btn" onclick="addP()">Look up &amp; register</button>
       <div id="am"></div>
+    </div>
+    <div class="card" id="create-card" style="display:none">
+      <p class="sl">Create new participant</p>
+      <p style="font-size:14px;color:#666;margin-bottom:12px">No profile found. Enter their details to create and register them now.</p>
+      <input type="text" id="cfn" placeholder="First name">
+      <input type="text" id="cln" placeholder="Last name">
+      <input type="email" id="ce" placeholder="Email" readonly style="background:#f0f0f0;color:#888">
+      <button class="btn" onclick="createP()">Create &amp; register</button>
+      <div id="cm"></div>
     </div>
   </div>
 
@@ -163,16 +172,48 @@ async function doCI(rid,btn){
 async function addP(){
   var email=document.getElementById('ae').value.trim();
   var msg=document.getElementById('am');
+  var cc=document.getElementById('create-card');
   if(!email){msg.innerHTML='<div class="al er">Enter an email.</div>';return;}
+  cc.style.display='none';
   msg.innerHTML='<div class="al inf"><span class="sp"></span> Looking up&hellip;</div>';
   var d=await rpc('admin_lookup_and_register',{p_email:email,p_event_id:EV,p_admin_secret:PASS});
   if(!d||!d.ok){
-    msg.innerHTML='<div class="al er">'+(d&&d.error?d.error:'Something went wrong.')+'</div>';
+    if(d&&d.error&&d.error.indexOf('No profile')>-1){
+      msg.innerHTML='<div class="al inf">No profile found. Fill in their details below to create them.</div>';
+      document.getElementById('ce').value=email;
+      document.getElementById('cfn').value='';
+      document.getElementById('cln').value='';
+      document.getElementById('cm').innerHTML='';
+      cc.style.display='';
+    } else {
+      msg.innerHTML='<div class="al er">'+(d&&d.error?d.error:'Something went wrong.')+'</div>';
+    }
   } else if(d.already_registered){
     msg.innerHTML='<div class="al inf">'+(d.first_name||email)+' is already registered.</div>';
   } else {
-    msg.innerHTML='<div class="al ok">'+(d.first_name||email)+' registered! Magic link will be sent when they sign in.</div>';
+    msg.innerHTML='<div class="al ok">'+(d.first_name||email)+' registered!</div>';
     document.getElementById('ae').value='';
+    loadAtt();
+  }
+}
+
+async function createP(){
+  var fn=document.getElementById('cfn').value.trim();
+  var ln=document.getElementById('cln').value.trim();
+  var email=document.getElementById('ce').value.trim();
+  var msg=document.getElementById('cm');
+  if(!fn){msg.innerHTML='<div class="al er">Enter first name.</div>';return;}
+  msg.innerHTML='<div class="al inf"><span class="sp"></span> Creating&hellip;</div>';
+  var d=await rpc('admin_create_and_register',{p_first_name:fn,p_last_name:ln,p_email:email,p_event_id:EV,p_admin_secret:PASS});
+  if(!d||!d.ok){
+    msg.innerHTML='<div class="al er">'+(d&&d.error?d.error:'Something went wrong.')+'</div>';
+  } else if(d.already_registered){
+    msg.innerHTML='<div class="al inf">'+fn+' is already registered.</div>';
+  } else {
+    msg.innerHTML='<div class="al ok">'+fn+' created and registered!</div>';
+    document.getElementById('ae').value='';
+    document.getElementById('create-card').style.display='none';
+    document.getElementById('am').innerHTML='';
     loadAtt();
   }
 }
