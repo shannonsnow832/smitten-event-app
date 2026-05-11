@@ -57,11 +57,12 @@ tr:last-child td{border-bottom:none}
     <h1>Event Admin</h1>
     <button class="btn" style="background:#888;padding:7px 14px;font-size:13px" onclick="adminOut()">Sign out</button>
   </div>
-  <p class="sub">Omaha Speed Dating &middot; May 12, 2026</p>
+  <p class="sub">Omaha Speed Dating &middot; May 11, 2026</p>
   <div class="nav">
     <button class="nt on" id="na" onclick="sec('a')">Attendees</button>
     <button class="nt" id="np" onclick="sec('p')">Add participant</button>
     <button class="nt" id="nm" onclick="sec('m')">Release matches</button>
+    <button class="nt" id="nr" onclick="sec('r')">Match results</button>
   </div>
 
   <div id="sa">
@@ -110,6 +111,20 @@ tr:last-child td{border-bottom:none}
       <div id="ws"><span class="sp"></span></div>
     </div>
   </div>
+
+  <div id="sr" style="display:none">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span class="sl">Mutual matches</span>
+        <button class="btn btn-out" style="padding:6px 12px;font-size:13px" onclick="loadResults()">&#8635; Refresh</button>
+      </div>
+      <div id="mr"><div style="text-align:center;padding:1rem"><span class="sp"></span></div></div>
+    </div>
+    <div class="card">
+      <p class="sl">No matches</p>
+      <div id="um"><div style="text-align:center;padding:1rem"><span class="sp"></span></div></div>
+    </div>
+  </div>
 </div>
 
 </div>
@@ -131,11 +146,12 @@ function login(){
 }
 
 function sec(s){
-  ['a','p','m'].forEach(function(n){
+  ['a','p','m','r'].forEach(function(n){
     document.getElementById('s'+n).style.display=n===s?'':'none';
     document.getElementById('n'+n).classList.toggle('on',n===s);
   });
   if(s==='m')loadPS();
+  if(s==='r')loadResults();
 }
 
 function hdrs(){return{apikey:AN,Authorization:'Bearer '+AN,'Content-Type':'application/json'}}
@@ -268,6 +284,32 @@ async function doRelease(){
   }
 }
 function adminOut(){document.getElementById('va').style.display='none';document.getElementById('vl').style.display='';document.getElementById('pw').value='';}
+
+async function loadResults(){
+  var mr=document.getElementById('mr');
+  var um=document.getElementById('um');
+  mr.innerHTML='<div style="text-align:center;padding:1rem"><span class="sp"></span></div>';
+  um.innerHTML='<div style="text-align:center;padding:1rem"><span class="sp"></span></div>';
+  var matches=await rpc('admin_get_matches',{p_event_id:EV,p_admin_secret:PASS});
+  var unmatched=await rpc('admin_get_unmatched',{p_event_id:EV,p_admin_secret:PASS});
+  if(!matches||!matches.length){
+    mr.innerHTML='<p style="color:#999;text-align:center;padding:1rem">No matches released yet.</p>';
+  } else {
+    mr.innerHTML='<table><thead><tr><th>Person 1</th><th>Person 2</th><th>Type</th></tr></thead><tbody>'
+    +matches.map(function(m){
+      var t=m.match_type==='date'||m.match_type==='Date'?'<span class="badge" style="background:#fdecea;color:#b71c1c">Date</span>':'<span class="badge" style="background:#e3f2fd;color:#1565c0">Friend</span>';
+      return '<tr><td style="font-weight:500">'+(m.user1_first||'')+' '+(m.user1_last||'')+'</td><td style="font-weight:500">'+(m.user2_first||'')+' '+(m.user2_last||'')+'</td><td>'+t+'</td></tr>';
+    }).join('')+'</tbody></table>';
+  }
+  if(!unmatched||!unmatched.length){
+    um.innerHTML='<p style="color:#2e7d32;text-align:center;padding:1rem">Everyone got a match!</p>';
+  } else {
+    um.innerHTML='<table><thead><tr><th>Name</th><th>Email</th></tr></thead><tbody>'
+    +unmatched.map(function(u){
+      return '<tr><td style="font-weight:500">'+(u.first_name||'')+' '+(u.last_name||'')+'</td><td style="color:#888;font-size:13px">'+(u.email||'')+'</td></tr>';
+    }).join('')+'</tbody></table>';
+  }
+}
 </script>
 </body>
 </html>
