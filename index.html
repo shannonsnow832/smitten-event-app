@@ -172,6 +172,10 @@ async function checkMatchesReleased(){
     document.getElementById('sb').disabled=true;
     document.getElementById('sb').textContent='Picks are closed';
     document.getElementById('pa').innerHTML='<div class="al inf">Picks are closed. Check your Matches tab!</div>';
+    // Disable all pick buttons
+    document.querySelectorAll('.opt').forEach(function(b){b.disabled=true;b.style.opacity='0.4';b.style.cursor='not-allowed';});
+    // Override pk function to do nothing
+    window.pk=function(){};
   }
 }
 
@@ -277,6 +281,8 @@ function rfr(){
     var i=b.dataset.i,t=b.dataset.t;
     b.className='opt';
     if(PX[i]===t)b.classList.add('s'+t);
+    if(MATCHES_RELEASED){b.disabled=true;b.style.opacity='0.4';b.style.cursor='not-allowed';}
+    else{b.disabled=false;b.style.opacity='';b.style.cursor='';}
   });
 }
 
