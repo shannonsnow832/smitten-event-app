@@ -104,7 +104,7 @@ input:focus,select:focus{border-color:#C6302C}
   </div>
 
   <div id="pm" style="display:none"><div id="mc"></div></div>
-  <div id="pcc" style="display:none"><div id="ch"><div class="empty">Select a match to chat.</div></div></div>
+  <div id="pcc" style="display:none"><div id="ch-list"></div><div id="ch"><div class="empty" style="display:none"></div></div></div>
 
   <div id="ppr" style="display:none">
     <div class="card">
@@ -325,7 +325,10 @@ async function loadMatches(){
 }
 
 async function openChat(oid,name){
-  ACH=oid;tab('c');
+  ACH=oid;
+  document.getElementById('ch-list').style.display='none';
+  document.getElementById('ch').style.display='';
+  if(!document.getElementById('pcc').style.display||document.getElementById('pcc').style.display==='none'){tab('c');}
   document.getElementById('ch').innerHTML=
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem">'
     +'<button onclick="closeCh()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#999">&#8592;</button>'
@@ -362,7 +365,45 @@ async function sendM(oid){
   loadMsgs(oid);
 }
 
-function closeCh(){ACH=null;if(window._cp)clearInterval(window._cp);document.getElementById('ch').innerHTML='<div class="empty">Select a match to chat.</div>';tab('m');}
+async function loadChats(){
+  var cl=document.getElementById('ch-list');
+  var ch=document.getElementById('ch');
+  if(ACH){return;} // already in a chat
+  cl.innerHTML='<div class="empty"><span class="sp"></span></div>';
+  ch.style.display='none';
+  cl.style.display='';
+  var r=await api('/rest/v1/matches?event_id=eq.'+EV+'&or=(user_id.eq.'+UID+',matched_user_id.eq.'+UID+')&status=eq.mutual&select=*');
+  if(!r.ok||!(await r.clone().json()).length){cl.innerHTML='<div class="empty">No matches yet — check back after the event!</div>';return;}
+  var data=await r.json();
+  var seen=new Set();
+  var deduped=data.filter(function(m){var oi=m.user_id===UID?m.matched_user_id:m.user_id;if(seen.has(oi))return false;seen.add(oi);return true;});
+  var ids=deduped.map(function(m){return m.user_id===UID?m.matched_user_id:m.user_id;});
+  var pr=await api('/rest/v1/profiles?id=in.('+ids.join(',')+')'+'&select=id,first_name,last_name,image_url');
+  var ps=pr.ok?await pr.json():[];
+  var bi={};ps.forEach(function(p){bi[p.id]=p;});
+  cl.innerHTML='<div class="card" style="padding:.75rem 1.25rem">'+deduped.map(function(m){
+    var oi=m.user_id===UID?m.matched_user_id:m.user_id;
+    var p=bi[oi]||{};
+    var lastInit=p.last_name?(p.last_name[0].toUpperCase()+'.') :'';
+    var displayName=(p.first_name||'Match')+(lastInit?' '+lastInit:'');
+    var ph=p.image_url?'<img class="av" src="'+p.image_url+'" alt="">':'<div class="av">'+(p.first_name||'?')[0].toUpperCase()+'</div>';
+    var pl=m.match_type==='date'?'<span class="pill pd" style="font-size:10px">Date</span>':'<span class="pill pf" style="font-size:10px">Friend</span>';
+    return '<div class="row" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 0" onclick="openChat(''+oi+'',''+encodeURIComponent(displayName)+'')">'
+      +ph
+      +'<div style="flex:1"><div style="display:flex;align-items:center;gap:6px"><span style="font-size:15px;font-weight:600">'+displayName+'</span>'+pl+'</div>'
+      +'<div style="font-size:13px;color:#999;margin-top:2px">Tap to chat</div></div>'
+      +'<span style="color:#ccc;font-size:18px">&#8250;</span>'
+      +'</div>';
+  }).join('')+'</div>';
+}
+
+function closeCh(){
+  ACH=null;
+  if(window._cp)clearInterval(window._cp);
+  document.getElementById('ch').style.display='none';
+  document.getElementById('ch-list').style.display='';
+  loadChats();
+}
 
 function tab(t){
   var panels={'p':'pp','m':'pm','c':'pcc','pr':'ppr'};
@@ -372,6 +413,7 @@ function tab(t){
     document.getElementById(tabs[n]).classList.toggle('on',n===t);
   });
   if(t==='m')loadMatches();
+  if(t==='c')loadChats();
 }
 
 function signOut(){localStorage.removeItem('ss_s');SES=null;UID=null;sv('vl');}
