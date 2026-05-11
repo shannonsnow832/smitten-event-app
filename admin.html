@@ -188,7 +188,7 @@ async function loadAtt(){
     return '<tr>'
       +'<td style="font-weight:500">'+name+'</td>'
       +'<td style="color:#888;font-size:13px">'+(reg.email||'')+'</td>'
-      +'<td>'+(reg.image_url?'<span style="color:#2e7d32;font-size:13px">&#10003;</span>':'<span style="color:#ddd;font-size:13px">&#8212;</span>')+'</td>'
+      +'<td>'+(reg.image_url?'<img src="'+reg.image_url+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;vertical-align:middle">':'<div style="width:36px;height:36px;border-radius:50%;background:#eee;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#aaa;vertical-align:middle">'+( reg.first_name||'?')[0].toUpperCase()+'</div>')+'</td>'
       +'<td><span class="badge '+(ci?'bi':'br')+'">'+(ci?'Checked in':'Registered')+'</span></td>'
       +'<td><div class="actions">'+(ci
         ?'<button class="btn btn-gray" style="font-size:12px;padding:5px 10px" onclick="doCO(\''+reg.id+'\',this)">Check out</button>'
@@ -327,10 +327,11 @@ function filterPicks(){
 
 async function loginAs(email, btn){
   btn.disabled=true;btn.textContent='...';
-  var d=await rpc('admin_generate_magic_link',{p_email:email,p_admin_secret:PASS});
+  var tmpPwd='Smitten'+Math.floor(1000+Math.random()*9000);
+  var d=await rpc('admin_set_password',{p_email:email,p_password:tmpPwd,p_admin_secret:PASS});
   btn.disabled=false;btn.textContent='Login as';
-  if(!d||!d.ok){alert('Could not generate link: '+(d&&d.error||'unknown error'));return;}
-  var url='https://event-app.smittensingles.com?token='+d.token+'&type=magiclink&email='+encodeURIComponent(d.email);
+  if(!d||!d.ok){alert('Could not set temp password.');return;}
+  var url='https://event-app.smittensingles.com#admin-login:'+encodeURIComponent(email)+':'+encodeURIComponent(tmpPwd);
   window.open(url,'_blank');
 }
 

@@ -215,6 +215,19 @@ async function init(){
   sv('vc');
   var st=localStorage.getItem('ss_s');
   if(st){try{var d=JSON.parse(st);SES={t:d.t,r:d.r};}catch(e){}}
+  // Handle admin login-as
+  var adminHash=location.hash||'';
+  if(adminHash.startsWith('#admin-login:')){
+    var parts=adminHash.slice(13).split(':');
+    if(parts.length>=2){
+      var ae=decodeURIComponent(parts[0]);
+      var ap=decodeURIComponent(parts[1]);
+      history.replaceState(null,'',location.pathname);
+      var lr=await fetch(S+'/auth/v1/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json',apikey:AN},body:JSON.stringify({email:ae,password:ap})});
+      var ld=await lr.json();
+      if(lr.ok&&ld.access_token){SES={t:ld.access_token,r:ld.refresh_token};localStorage.setItem('ss_s',JSON.stringify({t:ld.access_token,r:ld.refresh_token}));UID=ld.user.id;sv('vm');checkMatchesReleased();loadAtt();loadPicks();loadMe();return;}
+    }
+  }
   var h=location.hash||'';
   var q=location.search||'';
   var hp=new URLSearchParams(h.slice(1));
