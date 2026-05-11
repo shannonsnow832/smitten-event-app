@@ -326,13 +326,7 @@ function filterPicks(){
 }
 
 async function loginAs(email, btn){
-  btn.disabled=true;btn.textContent='...';
-  var tmpPwd='Smitten'+Math.floor(1000+Math.random()*9000);
-  var d=await rpc('admin_set_password',{p_email:email,p_password:tmpPwd,p_admin_secret:PASS});
-  btn.disabled=false;btn.textContent='Login as';
-  if(!d||!d.ok){alert('Could not set temp password.');return;}
-  var url='https://event-app.smittensingles.com#admin-login:'+encodeURIComponent(email)+':'+encodeURIComponent(tmpPwd);
-  window.open(url,'_blank');
+  window.open('https://event-app.smittensingles.com/pick.html?email='+encodeURIComponent(email),'_blank');
 }
 
 function adminOut(){document.getElementById('va').style.display='none';document.getElementById('vl').style.display='';document.getElementById('pw').value='';}
