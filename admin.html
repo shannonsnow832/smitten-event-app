@@ -124,6 +124,11 @@ tr:last-child td{border-bottom:none}
       <p class="sl">No matches</p>
       <div id="um"><div style="text-align:center;padding:1rem"><span class="sp"></span></div></div>
     </div>
+    <div class="card">
+      <p class="sl">All picks (full feedback)</p>
+      <p style="font-size:13px;color:#888;margin-bottom:12px">Every pick submitted — mutual or one-sided.</p>
+      <div id="ap"><div style="text-align:center;padding:1rem"><span class="sp"></span></div></div>
+    </div>
   </div>
 </div>
 
@@ -239,28 +244,24 @@ async function createP(){
 
 async function loadPS(){
   var el=document.getElementById('ps');
-  var r=await fetch(S+'/rest/v1/event_picks?event_id=eq.'+EV+'&select=pick_type',{headers:hdrs()});
-  if(!r.ok){el.innerHTML='<p style="color:#999">Could not load.</p>';return;}
-  var d=await r.json();
-  var c={date:0,friend:0,not_again:0};
-  d.forEach(function(p){if(c[p.pick_type]!==undefined)c[p.pick_type]++;});
+  var summary=await rpc('admin_get_picks_summary',{p_event_id:EV,p_admin_secret:PASS});
+  if(!summary){el.innerHTML='<p style="color:#999">Could not load.</p>';return;}
+  var total=(summary.date||0)+(summary.friend||0)+(summary.not_again||0);
   el.innerHTML='<table>'
-    +'<tr><td>Date picks</td><td><strong>'+c.date+'</strong></td></tr>'
-    +'<tr><td>Friend picks</td><td><strong>'+c.friend+'</strong></td></tr>'
-    +'<tr><td>Not again</td><td><strong>'+c.not_again+'</strong></td></tr>'
-    +'<tr><td style="color:#888">Total submitted</td><td><strong>'+(c.date+c.friend+c.not_again)+'</strong></td></tr>'
+    +'<tr><td>Date picks</td><td><strong>'+(summary.date||0)+'</strong></td></tr>'
+    +'<tr><td>Friend picks</td><td><strong>'+(summary.friend||0)+'</strong></td></tr>'
+    +'<tr><td>Not again</td><td><strong>'+(summary.not_again||0)+'</strong></td></tr>'
+    +'<tr><td style="color:#888">Total submitted</td><td><strong>'+total+'</strong></td></tr>'
     +'</table>';
-  loadWhoSubmitted();
+  loadWhoSubmitted(summary.submitters||[]);
 }
 
-async function loadWhoSubmitted(){
+async function loadWhoSubmitted(submitterIds){
   var el=document.getElementById('ws');
   if(!el)return;
   var d=await rpc('admin_get_registrations',{p_event_id:EV,p_admin_secret:PASS});
   if(!d||!d.length){el.innerHTML='<p style="color:#999">No registrations.</p>';return;}
-  var picks=await fetch(S+'/rest/v1/event_picks?event_id=eq.'+EV+'&select=picker_id',{headers:hdrs()});
-  var pd=picks.ok?await picks.json():[];
-  var submitted=new Set(pd.map(function(p){return p.picker_id;}));
+  var submitted=new Set(submitterIds||[]);
   var total=d.length;
   var done=d.filter(function(r){return submitted.has(r.profile_id);}).length;
   el.innerHTML='<p style="font-size:14px;color:#555;margin-bottom:10px"><strong>'+done+' of '+total+'</strong> participants have submitted picks.</p>'
@@ -288,10 +289,13 @@ function adminOut(){document.getElementById('va').style.display='none';document.
 async function loadResults(){
   var mr=document.getElementById('mr');
   var um=document.getElementById('um');
+  var ap=document.getElementById('ap');
   mr.innerHTML='<div style="text-align:center;padding:1rem"><span class="sp"></span></div>';
   um.innerHTML='<div style="text-align:center;padding:1rem"><span class="sp"></span></div>';
+  ap.innerHTML='<div style="text-align:center;padding:1rem"><span class="sp"></span></div>';
   var matches=await rpc('admin_get_matches',{p_event_id:EV,p_admin_secret:PASS});
   var unmatched=await rpc('admin_get_unmatched',{p_event_id:EV,p_admin_secret:PASS});
+  var allpicks=await rpc('admin_get_all_picks',{p_event_id:EV,p_admin_secret:PASS});
   if(!matches||!matches.length){
     mr.innerHTML='<p style="color:#999;text-align:center;padding:1rem">No matches released yet.</p>';
   } else {
@@ -307,6 +311,16 @@ async function loadResults(){
     um.innerHTML='<table><thead><tr><th>Name</th><th>Email</th></tr></thead><tbody>'
     +unmatched.map(function(u){
       return '<tr><td style="font-weight:500">'+(u.first_name||'')+' '+(u.last_name||'')+'</td><td style="color:#888;font-size:13px">'+(u.email||'')+'</td></tr>';
+    }).join('')+'</tbody></table>';
+  }
+  if(!allpicks||!allpicks.length){
+    ap.innerHTML='<p style="color:#999;text-align:center;padding:1rem">No picks submitted yet.</p>';
+  } else {
+    ap.innerHTML='<table><thead><tr><th>From</th><th>To</th><th>Pick</th><th>Result</th></tr></thead><tbody>'
+    +allpicks.map(function(p){
+      var pt=p.pick_type==='date'?'<span class="badge" style="background:#fdecea;color:#b71c1c">Date</span>':p.pick_type==='friend'?'<span class="badge" style="background:#e3f2fd;color:#1565c0">Friend</span>':'<span class="badge" style="background:#eee;color:#888">Not again</span>';
+      var result=p.is_mutual?'<span style="color:#2e7d32;font-weight:600">&#10024; Mutual</span>':'<span style="color:#aaa">One-sided</span>';
+      return '<tr><td style="font-weight:500">'+(p.picker_first||'')+' '+(p.picker_last||'')+'</td><td>'+(p.picked_first||'')+' '+(p.picked_last||'')+'</td><td>'+pt+'</td><td>'+result+'</td></tr>';
     }).join('')+'</tbody></table>';
   }
 }
