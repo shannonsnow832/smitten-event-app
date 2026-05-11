@@ -17,18 +17,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .logo h1{font-size:22px;font-weight:700;color:#C6302C}
 .logo p{font-size:13px;color:#666;margin-top:4px}
 .card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
-input{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:15px;background:#fafafa;color:#1a1a1a;outline:none;margin-bottom:10px}
-input:focus{border-color:#C6302C}
+input,select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:15px;background:#fafafa;color:#1a1a1a;outline:none;margin-bottom:10px}
+input:focus,select:focus{border-color:#C6302C}
 .btn{display:block;width:100%;padding:12px;background:#C6302C;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;text-align:center}
 .btn:hover{background:#a8231f}
 .btn:disabled{background:#ccc;cursor:not-allowed}
-.btn-gray{background:#888}
-.btn-gray:hover{background:#555}
+.btn-gray{background:#888}.btn-gray:hover{background:#555}
+.btn-outline{background:#fff;color:#C6302C;border:1px solid #C6302C;display:inline-block;width:auto;padding:7px 14px;font-size:13px}
 .nav{display:flex;border-bottom:1px solid #e8e8e8;margin-bottom:1rem;background:#fff;position:sticky;top:0;z-index:10}
-.nt{flex:1;padding:11px 4px;background:transparent;border:none;font-size:13px;cursor:pointer;color:#999;border-bottom:2px solid transparent}
+.nt{flex:1;padding:11px 4px;background:transparent;border:none;font-size:13px;cursor:pointer;color:#999;border-bottom:2px solid transparent;white-space:nowrap}
 .nt.on{color:#C6302C;border-bottom-color:#C6302C;font-weight:600}
-.row{padding:12px 0;border-bottom:1px solid #f2f2f2}
-.row:last-child{border-bottom:none}
+.nt-so{flex:none;padding:11px 12px;background:transparent;border:none;font-size:13px;cursor:pointer;color:#999;border-bottom:2px solid transparent}
+.row{padding:12px 0;border-bottom:1px solid #f2f2f2}.row:last-child{border-bottom:none}
 .top{display:flex;align-items:center;gap:12px;margin-bottom:8px}
 .av{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#eee;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:#999}
 .opts{display:flex;gap:5px;padding-left:56px}
@@ -38,22 +38,17 @@ input:focus{border-color:#C6302C}
 .opt.sn{background:#777;border-color:#777;color:#fff}
 .opt.sx{background:#eee;border-color:#ddd;color:#999}
 .al{padding:10px 14px;border-radius:8px;font-size:14px;margin-bottom:10px}
-.ok{background:#e8f5e9;color:#2e7d32}
-.er{background:#fdecea;color:#b71c1c}
-.inf{background:#e3f2fd;color:#1565c0}
-.mrow{padding:12px 0;border-bottom:1px solid #f2f2f2}
-.mrow:last-child{border-bottom:none}
+.ok{background:#e8f5e9;color:#2e7d32}.er{background:#fdecea;color:#b71c1c}.inf{background:#e3f2fd;color:#1565c0}
+.mrow{padding:12px 0;border-bottom:1px solid #f2f2f2}.mrow:last-child{border-bottom:none}
 .pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600}
-.pd{background:#fdecea;color:#b71c1c}
-.pf{background:#e3f2fd;color:#1565c0}
+.pd{background:#fdecea;color:#b71c1c}.pf{background:#e3f2fd;color:#1565c0}
 .cbtn{margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid #C6302C;background:transparent;color:#C6302C;font-size:13px;cursor:pointer;font-weight:500}
 .cbtn:hover{background:#C6302C;color:#fff}
 .bbl{padding:8px 12px;border-radius:16px;font-size:14px;max-width:78%;line-height:1.4;margin-bottom:4px}
 .bm{background:#C6302C;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
 .bt{background:#efefef;color:#1a1a1a;align-self:flex-start;border-bottom-left-radius:4px}
 .ts{font-size:11px;color:#bbb;text-align:center;margin:2px 0 8px}
-.ci{display:flex;gap:8px;margin-top:8px}
-.ci input{flex:1;margin:0}
+.ci{display:flex;gap:8px;margin-top:8px}.ci input{flex:1;margin:0}
 .sb2{padding:10px 14px;background:#C6302C;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:15px}
 .empty{text-align:center;padding:2rem 1rem;color:#999;font-size:14px}
 .sp{display:inline-block;width:16px;height:16px;border:2px solid rgba(198,48,44,.2);border-top-color:#C6302C;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:6px}
@@ -62,6 +57,7 @@ input:focus{border-color:#C6302C}
 .ld{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:4px}
 .pp{width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid #eee}
 .upbtn{margin-top:8px;padding:7px 14px;border:1px solid #C6302C;background:transparent;color:#C6302C;border-radius:8px;font-size:13px;cursor:pointer}
+.sl{font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -70,7 +66,7 @@ input:focus{border-color:#C6302C}
 
 <div id="vl">
   <div class="card">
-    <p style="font-size:13px;font-weight:600;color:#888;margin-bottom:4px">SIGN IN</p>
+    <p class="sl">Sign in</p>
     <p style="font-size:14px;color:#666;margin-bottom:1rem">Enter your email to get a magic link. No password needed.</p>
     <input type="email" id="ei" placeholder="your@email.com">
     <button class="btn" id="lb" onclick="doMagic()">Send magic link</button>
@@ -92,7 +88,7 @@ input:focus{border-color:#C6302C}
     <button class="nt" id="tm" onclick="tab('m')">&#10024; Matches</button>
     <button class="nt" id="tc" onclick="tab('c')">&#128172; Chat</button>
     <button class="nt" id="tpr" onclick="tab('pr')">&#128100; Me</button>
-    <button class="nt" onclick="signOut()" style="flex:none;padding:11px 14px;color:#888;font-size:13px;">Sign out</button>
+    <button class="nt-so" onclick="signOut()">Sign out</button>
   </div>
 
   <div id="pp">
@@ -112,16 +108,30 @@ input:focus{border-color:#C6302C}
 
   <div id="ppr" style="display:none">
     <div class="card">
-      <p style="font-size:12px;font-weight:600;color:#888;margin-bottom:10px">MY PHOTO</p>
+      <p class="sl">My photo</p>
       <div id="ppw"><div class="av" id="pph" style="width:80px;height:80px;font-size:28px">?</div></div>
       <div style="margin-top:10px">
         <input type="file" id="pf" accept="image/*" style="display:none;margin:0" onchange="upPhoto(this)">
         <button class="upbtn" onclick="document.getElementById('pf').click()">&#128247; Upload photo</button>
         <div id="phm" style="margin-top:8px;font-size:13px"></div>
       </div>
-      <p style="font-size:12px;color:#bbb;margin-top:10px">Your photo shows as a small thumbnail to other attendees.</p>
     </div>
-    <button class="btn" style="background:#888;margin-top:8px" onclick="signOut()">Sign out of event</button>
+    <div class="card">
+      <p class="sl">My info</p>
+      <label style="font-size:13px;color:#888;display:block;margin-bottom:4px">Date of birth</label>
+      <input type="date" id="pdob" style="margin-bottom:12px">
+      <label style="font-size:13px;color:#888;display:block;margin-bottom:4px">Gender</label>
+      <select id="pgender" style="margin-bottom:12px">
+        <option value="">Select gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Non-binary">Non-binary</option>
+        <option value="Prefer not to say">Prefer not to say</option>
+      </select>
+      <button class="btn" onclick="saveProfile()">Save</button>
+      <div id="profmsg" style="margin-top:8px;font-size:13px"></div>
+    </div>
+    <button class="btn btn-gray" onclick="signOut()">Sign out of event</button>
   </div>
 </div>
 </div>
@@ -130,14 +140,12 @@ input:focus{border-color:#C6302C}
 var S='https://qgctltxcgsnbrdtbhmay.supabase.co';
 var AN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnY3RsdHhjZ3NuYnJkdGJobWF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMjgwNTcsImV4cCI6MjA5MDYwNDA1N30.-TS1CofnGMGAj38OrZAvtphbHPXQWZWtysO83_960M4';
 var EV='d2b033e6-a79f-44e1-8282-f030bea541c0';
-var OR='fc511c38-937d-4a1a-bfe2-28ce4c7c7744';
-var SES=null,UID=null,PRF=null,PX={},ACH=null;
+var REDIRECT='https://event-app.smittensingles.com';
+var SES=null,UID=null,PRF=null,PX={},ACH=null,MATCHES_RELEASED=false;
 
 function hd(x){return Object.assign({'Content-Type':'application/json',apikey:AN,Authorization:'Bearer '+(SES&&SES.t||AN)},x||{})}
 function api(p,o){return fetch(S+p,Object.assign({headers:hd()},o||{}))}
 function sv(v){['vl','vc','vm'].forEach(function(n){document.getElementById(n).style.display=n===v?'':'none'})}
-
-var REDIRECT='https://event-app.smittensingles.com/';
 
 async function doMagic(){
   var e=document.getElementById('ei').value.trim();
@@ -155,6 +163,16 @@ async function doMagic(){
   var r=await fetch(S+'/auth/v1/otp',{method:'POST',headers:{'Content-Type':'application/json',apikey:AN},body:JSON.stringify({email:e,options:{emailRedirectTo:REDIRECT}})});
   b.disabled=false;b.textContent='Send magic link';
   document.getElementById('lm').innerHTML=r.ok?'<div class="al ok">Magic link sent! Check your email.</div>':'<div class="al er">Something went wrong. Try again.</div>';
+}
+
+async function checkMatchesReleased(){
+  var r=await api('/rest/v1/rpc/event_matches_released',{method:'POST',body:JSON.stringify({p_event_id:EV})});
+  if(r.ok){var d=await r.json();MATCHES_RELEASED=!!d;}
+  if(MATCHES_RELEASED){
+    document.getElementById('sb').disabled=true;
+    document.getElementById('sb').textContent='Picks are closed';
+    document.getElementById('pa').innerHTML='<div class="al inf">Picks are closed. Check your Matches tab!</div>';
+  }
 }
 
 async function init(){
@@ -175,11 +193,12 @@ async function init(){
   if(!ur.ok){localStorage.removeItem('ss_s');SES=null;sv('vl');return;}
   UID=(await ur.json()).id;
   sv('vm');
+  checkMatchesReleased();
   loadAtt();loadPicks();loadMe();
 }
 
 async function loadMe(){
-  var r=await api('/rest/v1/profiles?id=eq.'+UID+'&select=id,first_name,image_url,photos');
+  var r=await api('/rest/v1/profiles?id=eq.'+UID+'&select=id,first_name,image_url,photos,date_of_birth,gender');
   if(!r.ok)return;
   var d=await r.json();
   if(!d||!d.length)return;
@@ -189,6 +208,17 @@ async function loadMe(){
   var w=document.getElementById('ppw');
   if(ph)w.innerHTML='<img class="pp" src="'+ph+'" alt="">';
   else document.getElementById('pph').textContent=init;
+  if(PRF.date_of_birth)document.getElementById('pdob').value=PRF.date_of_birth;
+  if(PRF.gender)document.getElementById('pgender').value=PRF.gender;
+}
+
+async function saveProfile(){
+  var dob=document.getElementById('pdob').value;
+  var gender=document.getElementById('pgender').value;
+  var msg=document.getElementById('profmsg');
+  var r=await fetch(S+'/rest/v1/profiles?id=eq.'+UID,{method:'PATCH',headers:hd({Prefer:'return=minimal'}),body:JSON.stringify({date_of_birth:dob||null,gender:gender||null})});
+  if(r.ok){msg.innerHTML='<span style="color:#2e7d32">Saved!</span>';setTimeout(function(){msg.innerHTML=''},3000);}
+  else{msg.innerHTML='<span style="color:#b71c1c">Error saving. Try again.</span>';}
 }
 
 async function upPhoto(inp){
@@ -209,24 +239,20 @@ async function upPhoto(inp){
 async function loadAtt(){
   var r=await api('/rest/v1/rpc/event_attendees_for_caller',{method:'POST',body:JSON.stringify({p_event_id:EV})});
   var el=document.getElementById('al');
-  if(!r.ok){el.innerHTML='<div class="empty">Could not load attendees.<br>Are you registered for this event?</div>';return;}
+  if(!r.ok){el.innerHTML='<div class="empty">Could not load attendees.<br>Are you registered and checked in?</div>';return;}
   var d=await r.json();
-  if(!d||!d.length){el.innerHTML='<div class="empty">No other attendees yet.</div>';return;}
+  if(!d||!d.length){el.innerHTML='<div class="empty">No other checked-in attendees yet.</div>';return;}
   el.innerHTML=d.map(function(a){
-    var age=calcAge(a.date_of_birth);
     var ph=a.image_url||(a.photos&&a.photos[0])||'';
     var init=(a.first_name||'?')[0].toUpperCase();
-    var av=ph?'<img class="av" src="'+ph+'" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover">':'<div class="av">'+init+'</div>';
+    var av=ph?'<img class="av" src="'+ph+'" alt="">':'<div class="av">'+init+'</div>';
     return '<div class="row" id="r-'+a.id+'">'
-      +'<div class="top">'+av+'<div>'
-      +'<div style="font-size:15px;font-weight:600">'+(a.first_name||'Guest')+'</div>'
-      
-      +'</div></div>'
+      +'<div class="top">'+av+'<div><div style="font-size:15px;font-weight:600">'+(a.first_name||'Guest')+'</div></div></div>'
       +'<div class="opts">'
       +'<button class="opt" data-i="'+a.id+'" data-t="d" onclick="pk(\''+a.id+'\',\'d\')">&#10084; Date</button>'
       +'<button class="opt" data-i="'+a.id+'" data-t="f" onclick="pk(\''+a.id+'\',\'f\')">&#128075; Friend</button>'
       +'<button class="opt" data-i="'+a.id+'" data-t="n" onclick="pk(\''+a.id+'\',\'n\')">&#128683; Not again</button>'
-      +'<button class="opt" data-i="'+a.id+'" data-t="x" onclick="pk(\''+a.id+'\',\'x\')">&#8212; None</button>'
+      +'<button class="opt" data-i="'+a.id+'" data-t="x" onclick="pk(\''+a.id+'\',\'x\')">None</button>'
       +'</div></div>';
   }).join('');
   rfr();
@@ -269,14 +295,6 @@ async function savePicks(){
   b.disabled=false;b.textContent='Save my picks';
 }
 
-function calcAge(d){
-  if(!d)return null;
-  var b=new Date(d),n=new Date();
-  var a=n.getFullYear()-b.getFullYear();
-  if(n<new Date(n.getFullYear(),b.getMonth(),b.getDate()))a--;
-  return a;
-}
-
 async function loadMatches(){
   var mc=document.getElementById('mc');
   mc.innerHTML='<div class="card"><div class="empty" style="padding:2rem 0">&#10084;<br><br>Check back after the event for your matches!</div></div>';
@@ -284,19 +302,25 @@ async function loadMatches(){
   if(!r.ok){return;}
   var data=await r.json();
   if(!data||!data.length){return;}
-  var ids=data.map(function(m){return m.user_id===UID?m.matched_user_id:m.user_id;});
-  var pr=await api('/rest/v1/profiles?id=in.('+ids.join(',')+')'+'&select=id,first_name,image_url,date_of_birth');
+  var seen=new Set();
+  var deduped=data.filter(function(m){
+    var oi=m.user_id===UID?m.matched_user_id:m.user_id;
+    if(seen.has(oi))return false;
+    seen.add(oi);return true;
+  });
+  var ids=deduped.map(function(m){return m.user_id===UID?m.matched_user_id:m.user_id;});
+  var pr=await api('/rest/v1/profiles?id=in.('+ids.join(',')+')'+'&select=id,first_name,last_name,image_url');
   var ps=pr.ok?await pr.json():[];
   var bi={};ps.forEach(function(p){bi[p.id]=p;});
-  mc.innerHTML='<div class="card" style="padding:.75rem 1.25rem">'+data.map(function(m){
+  mc.innerHTML='<div class="card" style="padding:.75rem 1.25rem">'+deduped.map(function(m){
     var oi=m.user_id===UID?m.matched_user_id:m.user_id;
     var p=bi[oi]||{};
-    var age=calcAge(p.date_of_birth);
+    var lastInit=p.last_name?(p.last_name[0].toUpperCase()+'.') :'';
+    var displayName=(p.first_name||'Your match')+(lastInit?' '+lastInit:'');
     var pl=m.match_type==='date'?'<span class="pill pd">Date</span>':m.match_type==='friend'?'<span class="pill pf">Friend</span>':'';
     return '<div class="mrow"><div style="display:flex;align-items:center;gap:8px">'+pl
-      +'<span style="font-size:15px;font-weight:600">'+(p.first_name||'Your match')+'</span>'
-      +(age?'<span style="font-size:13px;color:#888">&middot; Age '+age+'</span>':'')
-      +'</div><button class="cbtn" onclick="openChat(\''+oi+'\',\''+encodeURIComponent(p.first_name||'Match')+'\')">&#128172; Chat</button></div>';
+      +'<span style="font-size:15px;font-weight:600">'+displayName+'</span>'
+      +'</div><button class="cbtn" onclick="openChat(\''+oi+'\',\''+encodeURIComponent(displayName)+'\')">&#128172; Chat</button></div>';
   }).join('')+'</div>';
 }
 
@@ -352,8 +376,8 @@ function tab(t){
 
 function signOut(){localStorage.removeItem('ss_s');SES=null;UID=null;sv('vl');}
 
-init();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/smitten-event-app/sw.js');}
+init();
 </script>
 </body>
 </html>
