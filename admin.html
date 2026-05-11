@@ -180,7 +180,7 @@ async function loadAtt(){
       +'<td style="color:#888;font-size:13px">'+(reg.email||'')+'</td>'
       +'<td><span class="badge '+(ci?'bi':'br')+'">'+(ci?'Checked in':'Registered')+'</span></td>'
       +'<td>'+(ci
-        ?'<span style="color:#2e7d32;font-size:13px">&#10003; Done</span>'
+        ?'<button class="btn btn-out" style="padding:4px 10px;font-size:12px;border-color:#888;color:#888" onclick="doCO(\''+reg.id+'\',this)">Check out</button>'
         :'<button class="btn btn-out" style="padding:4px 10px;font-size:12px" onclick="doCI(\''+reg.id+'\',this)">Check in</button>')
       +'</td></tr>';
   }).join('')+'</tbody></table>';
@@ -191,6 +191,13 @@ async function doCI(rid,btn){
   var d=await rpc('admin_checkin',{p_registration_id:rid,p_admin_secret:PASS});
   if(d&&d.ok)loadAtt();
   else{btn.disabled=false;btn.textContent='Check in';alert('Failed. Try again.');}
+}
+
+async function doCO(rid,btn){
+  btn.disabled=true;btn.textContent='...';
+  var d=await rpc('admin_checkout',{p_registration_id:rid,p_admin_secret:PASS});
+  if(d&&d.ok)loadAtt();
+  else{btn.disabled=false;btn.textContent='Check out';alert('Failed. Try again.');}
 }
 
 async function addP(){
