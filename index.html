@@ -115,6 +115,7 @@ input:focus,select:focus{border-color:#C6302C}
       <span><span class="ld" style="background:#185FA5"></span>Friend</span>
       <span><span class="ld" style="background:#777"></span>Not again</span>
     </div>
+    <input type="text" id="search-att" placeholder="Search..." oninput="renderAttendees(this.value)" style="margin-bottom:8px">
     <div class="card" style="padding:.75rem 1.25rem"><div id="al"><div class="empty"><span class="sp"></span></div></div></div>
     <button class="btn" id="sb" onclick="savePicks()">Save my picks</button>
     <p style="font-size:12px;color:#bbb;text-align:center;margin-top:8px">You can update your picks until the event ends.</p>
@@ -309,25 +310,43 @@ async function upPhoto(inp){
   if(PRF)PRF.image_url=url;
 }
 
+var ALL_ATTENDEES = [];
+
+function renderAttendees(filter){
+  var el=document.getElementById('al');
+  var d=filter?ALL_ATTENDEES.filter(function(a){return (a.first_name||'').toLowerCase().indexOf(filter.toLowerCase())>-1;}):ALL_ATTENDEES;
+  if(!d||!d.length){el.innerHTML='<div class="empty">No attendees found.</div>';return;}
+  var men=d.filter(function(a){return a.gender==='Male';}).sort(function(a,b){return (a.first_name||'').localeCompare(b.first_name||'');});
+  var women=d.filter(function(a){return a.gender==='Female';}).sort(function(a,b){return (a.first_name||'').localeCompare(b.first_name||'');});
+  var other=d.filter(function(a){return a.gender!=='Male'&&a.gender!=='Female';}).sort(function(a,b){return (a.first_name||'').localeCompare(b.first_name||'');});
+  function renderGroup(group, label){
+    if(!group.length)return '';
+    return '<div style="font-size:11px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.05em;padding:10px 0 4px">'+label+'</div>'
+      +group.map(function(a){
+        var ph=a.image_url||(a.photos&&a.photos[0])||'';
+        var init=(a.first_name||'?')[0].toUpperCase();
+        var av=ph?'<img class="av" src="'+ph+'" alt="">':'<div class="av">'+init+'</div>';
+        var picks=PX[a.id]||{};
+        return '<div class="row"><div class="top">'+av+'<div><div style="font-size:15px;font-weight:600">'+(a.first_name||'Guest')+'</div></div></div>'
+          +'<div class="opts">'
+          +'<button class="opt" data-i="'+a.id+'" data-t="d" onclick="pk(\''+a.id+'\',\'d\')">&#10084; Date</button>'
+          +'<button class="opt" data-i="'+a.id+'" data-t="f" onclick="pk(\''+a.id+'\',\'f\')">&#128075; Friend</button>'
+          +'<button class="opt" data-i="'+a.id+'" data-t="n" onclick="pk(\''+a.id+'\',\'n\')">&#128683; Not again</button>'
+          +'</div></div>';
+      }).join('');
+  }
+  el.innerHTML=renderGroup(men,'Men')+renderGroup(women,'Women')+(other.length?renderGroup(other,'Other'):'');
+  rfr();
+}
+
 async function loadAtt(){
   var r=await api('/rest/v1/rpc/event_attendees_for_caller',{method:'POST',body:JSON.stringify({p_event_id:EV})});
   var el=document.getElementById('al');
   if(!r.ok){el.innerHTML='<div class="empty">Could not load attendees.<br>Are you checked in?</div>';return;}
   var d=await r.json();
   if(!d||!d.length){el.innerHTML='<div class="empty">No other checked-in attendees yet.</div>';return;}
-  el.innerHTML=d.map(function(a){
-    var ph=a.image_url||(a.photos&&a.photos[0])||'';
-    var init=(a.first_name||'?')[0].toUpperCase();
-    var av=ph?'<img class="av" src="'+ph+'" alt="">':'<div class="av">'+init+'</div>';
-    return '<div class="row"><div class="top">'+av+'<div><div style="font-size:15px;font-weight:600">'+(a.first_name||'Guest')+'</div></div></div>'
-      +'<div class="opts">'
-      +'<button class="opt" data-i="'+a.id+'" data-t="d" onclick="pk(\''+a.id+'\',\'d\')">&#10084; Date</button>'
-      +'<button class="opt" data-i="'+a.id+'" data-t="f" onclick="pk(\''+a.id+'\',\'f\')">&#128075; Friend</button>'
-      +'<button class="opt" data-i="'+a.id+'" data-t="n" onclick="pk(\''+a.id+'\',\'n\')">&#128683; Not again</button>'
-      +'<button class="opt" data-i="'+a.id+'" data-t="x" onclick="pk(\''+a.id+'\',\'x\')">None</button>'
-      +'</div></div>';
-  }).join('');
-  rfr();
+  ALL_ATTENDEES=d;
+  renderAttendees('');
 }
 
 async function loadPicks(){
@@ -336,19 +355,37 @@ async function loadPicks(){
   var d=await r.json();
   PX={};
   d.forEach(function(p){
-    var t=p.pick_type==='date'?'d':p.pick_type==='friend'?'f':p.pick_type==='not_again'?'n':'x';
-    PX[p.picked_id]=t;
+    if(!PX[p.picked_id])PX[p.picked_id]={};
+    if(p.pick_type==='date')PX[p.picked_id].d=true;
+    else if(p.pick_type==='friend')PX[p.picked_id].f=true;
+    else if(p.pick_type==='not_again')PX[p.picked_id].n=true;
   });
   rfr();
 }
 
-function pk(id,t){if(MATCHES_RELEASED)return;if(PX[id]===t){delete PX[id];}else{PX[id]=t;}rfr();}
+function pk(id,t){
+  if(MATCHES_RELEASED)return;
+  if(!PX[id])PX[id]={};
+  if(t==='n'){
+    // Not again is exclusive
+    if(PX[id].n){delete PX[id].n;}
+    else{PX[id]={n:true};}
+  } else if(t==='d'||t==='f'){
+    // Date and Friend can both be selected, but not_again cancels them
+    delete PX[id].n;
+    if(PX[id][t]){delete PX[id][t];}
+    else{PX[id][t]=true;}
+  }
+  if(!Object.keys(PX[id]).length)delete PX[id];
+  rfr();
+}
 
 function rfr(){
   document.querySelectorAll('.opt').forEach(function(b){
     var i=b.dataset.i,t=b.dataset.t;
     b.className='opt';
-    if(PX[i]===t)b.classList.add('s'+t);
+    var picks=PX[i]||{};
+    if(picks[t])b.classList.add('s'+t);
     if(MATCHES_RELEASED){b.disabled=true;b.style.opacity='0.4';b.style.cursor='not-allowed';}
     else{b.disabled=false;b.style.opacity='';b.style.cursor='';}
   });
@@ -361,8 +398,13 @@ async function savePicks(){
   var ae=document.getElementById('pa');
   try{
     await fetch(S+'/rest/v1/event_picks?event_id=eq.'+EV+'&picker_id=eq.'+UID,{method:'DELETE',headers:hd()});
-    var map={d:'date',f:'friend',n:'not_again',x:'none'};
-    var rows=Object.entries(PX).filter(function(e){return e[1]!=='x';}).map(function(e){return{event_id:EV,picker_id:UID,picked_id:e[0],pick_type:map[e[1]]};});
+    var rows=[];
+    Object.entries(PX).forEach(function(e){
+      var id=e[0],picks=e[1];
+      if(picks.d)rows.push({event_id:EV,picker_id:UID,picked_id:id,pick_type:'date'});
+      if(picks.f)rows.push({event_id:EV,picker_id:UID,picked_id:id,pick_type:'friend'});
+      if(picks.n)rows.push({event_id:EV,picker_id:UID,picked_id:id,pick_type:'not_again'});
+    });
     if(rows.length)await fetch(S+'/rest/v1/event_picks',{method:'POST',headers:hd({Prefer:'return=minimal'}),body:JSON.stringify(rows)});
     ae.innerHTML='<div class="al ok">Picks saved!</div>';
     setTimeout(function(){ae.innerHTML=''},3000);
