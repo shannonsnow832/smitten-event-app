@@ -94,7 +94,7 @@ tr:last-child td{border-bottom:none}
 <div id="vd" style="display:none">
   <div class="card" style="max-width:360px;margin:3rem auto;text-align:center">
     <p style="font-size:16px;font-weight:600;margin-bottom:8px">Access denied</p>
-    <p style="font-size:14px;color:#555;margin-bottom:16px">Your account does not have admin or host access. Contact Shannon to request access.</p>
+    <p style="font-size:14px;color:#555;margin-bottom:16px">Your account does not have admin or host access. Contact your administrator to request access.</p>
     <button class="btn btn-full" onclick="signOut()">Sign out</button>
   </div>
 </div>
@@ -337,9 +337,13 @@ async function doVerifyOtp(){
 }
 
 async function checkAccess(){
-  // Try to link auth user to staff row by email (handles first-time login for pre-created hosts)
-  await fetch(S+'/rest/v1/rpc/staff_link_user',{method:'POST',headers:hdrs(),body:JSON.stringify({p_email:OTP_EMAIL})});
-  // Now check staff row
+  // Get email from auth user (needed for first-time host linking)
+  var ue=await fetch(S+'/auth/v1/user',{headers:{apikey:AN,Authorization:'Bearer '+SES.t}});
+  var udata=ue.ok?await ue.json():{};
+  var userEmail=udata.email||OTP_EMAIL||'';
+  // Link auth user to staff row by email if not yet linked
+  if(userEmail)await fetch(S+'/rest/v1/rpc/staff_link_user',{method:'POST',headers:hdrs(),body:JSON.stringify({p_email:userEmail})});
+  // Read own staff row (simple RLS: user_id = auth.uid())
   var r=await fetch(S+'/rest/v1/staff?user_id=eq.'+UID+'&is_active=eq.true&select=id,role&limit=1',{headers:hdrs()});
   var staff=r.ok?await r.json():[];
   if(!staff||!staff.length){sv('vd');return;}
@@ -418,7 +422,7 @@ function signOut(){
 async function loadHosts(){
   var el=document.getElementById('hl');
   el.innerHTML='<span class="sp"></span>';
-  var r=await fetch(S+'/rest/v1/staff?is_active=eq.true&select=id,first_name,last_name,email,role&order=role.asc,first_name.asc',{headers:hdrs()});
+  var r=await fetch(S+'/rest/v1/rpc/admin_get_staff',{method:'POST',headers:hdrs(),body:JSON.stringify({})});
   var staff=r.ok?await r.json():[];
   if(!staff.length){el.innerHTML='<p style="color:#555;padding:8px 0">No staff found.</p>';return;}
   el.innerHTML='<table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th></th></tr></thead><tbody>'
@@ -442,41 +446,27 @@ async function addHost(){
   var msg=document.getElementById('hm');
   if(!fn||!email){msg.innerHTML='<div class="al er">First name and email are required.</div>';return;}
   msg.innerHTML='<div class="al inf"><span class="sp"></span> Adding&hellip;</div>';
-  // Check if already exists
-  var chk=await fetch(S+'/rest/v1/staff?email=eq.'+encodeURIComponent(email)+'&select=id,is_active',{headers:hdrs()});
-  var existing=chk.ok?await chk.json():[];
-  if(existing.length){
-    if(existing[0].is_active){
+  var d=await fetch(S+'/rest/v1/rpc/admin_add_staff',{method:'POST',headers:hdrs(),body:JSON.stringify({p_first_name:fn,p_last_name:ln||'',p_email:email,p_role:role,p_org_id:ORG_ID})});
+  var res=d.ok?await d.json():{};
+  if(!res.ok){
+    if(res.error==='already_exists'){
       msg.innerHTML='<div class="al inf">A staff member with that email already exists.</div>';
-      return;
-    }
-    // Reactivate
-    var ra=await fetch(S+'/rest/v1/staff?id=eq.'+existing[0].id,{method:'PATCH',headers:Object.assign({},hdrs(),{Prefer:'return=minimal'}),body:JSON.stringify({is_active:true,role:role,first_name:fn,last_name:ln||null})});
-    if(ra.ok){
-      msg.innerHTML='<div class="al ok">'+fn+' reactivated as '+role+'.</div>';
-      document.getElementById('hfn').value='';document.getElementById('hln').value='';document.getElementById('he').value='';
-      loadHosts();
     } else {
-      msg.innerHTML='<div class="al er">Error updating. Try again.</div>';
+      msg.innerHTML='<div class="al er">'+(res.error||'Something went wrong.')+'</div>';
     }
     return;
   }
-  // Insert new — user_id will be linked when they first sign in via OTP (auth.users created on first OTP)
-  var ins=await fetch(S+'/rest/v1/staff',{method:'POST',headers:Object.assign({},hdrs(),{Prefer:'return=minimal'}),body:JSON.stringify({first_name:fn,last_name:ln||null,email:email,role:role,organization_id:ORG_ID,is_active:true})});
-  if(ins.ok){
-    msg.innerHTML='<div class="al ok">'+fn+' added as '+role+'. They can now sign in with their email.</div>';
-    document.getElementById('hfn').value='';document.getElementById('hln').value='';document.getElementById('he').value='';
-    loadHosts();
-  } else {
-    msg.innerHTML='<div class="al er">Error adding. Try again.</div>';
-  }
+  msg.innerHTML='<div class="al ok">'+fn+(res.reactivated?' reactivated':' added')+' as '+role+'. They can sign in immediately.</div>';
+  document.getElementById('hfn').value='';document.getElementById('hln').value='';document.getElementById('he').value='';
+  loadHosts();
 }
 
 async function deactivateHost(id,name,btn){
   if(!confirm('Remove '+name+' from admin access?'))return;
   btn.disabled=true;btn.textContent='...';
-  var r=await fetch(S+'/rest/v1/staff?id=eq.'+id,{method:'PATCH',headers:Object.assign({},hdrs(),{Prefer:'return=minimal'}),body:JSON.stringify({is_active:false})});
-  if(r.ok)loadHosts();
+  var r=await fetch(S+'/rest/v1/rpc/admin_deactivate_staff',{method:'POST',headers:hdrs(),body:JSON.stringify({p_staff_id:id})});
+  var res=r.ok?await r.json():{};
+  if(res.ok)loadHosts();
   else{btn.disabled=false;btn.textContent='Remove';alert('Failed. Try again.');}
 }
 
