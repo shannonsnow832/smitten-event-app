@@ -9,7 +9,7 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh}
 .app{max-width:700px;margin:0 auto;padding:1.5rem 1rem}
 h1{font-size:20px;font-weight:700;color:#C6302C}
-.sub{font-size:13px;color:#888;margin-bottom:1.5rem;margin-top:2px}
+.sub{font-size:13px;color:#555;margin-bottom:1.5rem;margin-top:2px}
 .card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
 input,select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fafafa;color:#1a1a1a;outline:none;margin-bottom:8px}
 input:focus,select:focus{border-color:#C6302C}
@@ -27,21 +27,21 @@ input:focus,select:focus{border-color:#C6302C}
 .er{background:#fdecea;color:#b71c1c}
 .inf{background:#e3f2fd;color:#1565c0}
 .nav{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap}
-.nt{padding:8px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;font-size:13px;cursor:pointer;color:#888;white-space:nowrap}
+.nt{padding:8px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;font-size:13px;cursor:pointer;color:#555;white-space:nowrap}
 .nt.on{background:#C6302C;color:#fff;border-color:#C6302C;font-weight:600}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;font-size:11px;color:#999;font-weight:600;padding:6px 8px;border-bottom:1px solid #eee;text-transform:uppercase;letter-spacing:.04em}
+th{text-align:left;font-size:11px;color:#555;font-weight:600;padding:6px 8px;border-bottom:1px solid #eee;text-transform:uppercase;letter-spacing:.04em}
 td{padding:10px 8px;border-bottom:1px solid #f5f5f5;vertical-align:middle}
 tr:last-child td{border-bottom:none}
-.av-sm{width:32px;height:32px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:8px}
-.av-init{width:32px;height:32px;border-radius:50%;background:#eee;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#888;vertical-align:middle;margin-right:8px}
 .badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
 .bi{background:#e8f5e9;color:#2e7d32}
 .br{background:#fff3e0;color:#e65100}
 .actions{display:flex;gap:6px;flex-wrap:wrap}
 .sp{display:inline-block;width:14px;height:14px;border:2px solid rgba(198,48,44,.2);border-top-color:#C6302C;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:4px}
 @keyframes sp{to{transform:rotate(360deg)}}
-.sl{font-size:11px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.sl{font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.ev-select-wrap{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;gap:10px;align-items:center}
+.ev-select-wrap select{margin:0;flex:1}
 @media(max-width:600px){
   .app{padding:1rem .75rem}
   table{font-size:12px}
@@ -51,10 +51,8 @@ tr:last-child td{border-bottom:none}
   .actions button{width:100%;text-align:center}
   .nav{gap:4px}
   .nt{padding:8px 8px;font-size:12px}
-  .summary-pills{flex-direction:row;flex-wrap:wrap}
   h1{font-size:17px}
   .sub{font-size:12px}
-  /* Hide email column on mobile */
   th:nth-child(3),td:nth-child(3){display:none}
 }
 </style>
@@ -62,6 +60,7 @@ tr:last-child td{border-bottom:none}
 <body>
 <div class="app">
 
+<!-- LOGIN -->
 <div id="vl">
   <div class="card" style="max-width:320px;margin:3rem auto">
     <h1 style="margin-bottom:1rem">Admin Login</h1>
@@ -71,12 +70,31 @@ tr:last-child td{border-bottom:none}
   </div>
 </div>
 
-<div id="va" style="display:none">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-    <h1>Event Admin</h1>
-    <button class="btn" style="background:#888;padding:7px 14px;font-size:13px" onclick="adminOut()">Sign out</button>
+<!-- EVENT PICKER -->
+<div id="vep" style="display:none">
+  <div class="card" style="max-width:400px;margin:3rem auto">
+    <h1 style="margin-bottom:1rem">Select Event</h1>
+    <select id="ev-sel" style="margin-bottom:12px">
+      <option value="">Loading events...</option>
+    </select>
+    <button class="btn btn-full" onclick="enterEvent()">Open event</button>
+    <div id="epm" style="margin-top:8px"></div>
   </div>
-  <p class="sub">Omaha Speed Dating &middot; May 11, 2026</p>
+</div>
+
+<!-- ADMIN APP -->
+<div id="va" style="display:none">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+    <div>
+      <h1>Event Admin</h1>
+      <p class="sub" id="ev-sub"></p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn" style="background:#555;padding:7px 14px;font-size:13px" onclick="switchEvent()">Switch event</button>
+      <button class="btn" style="background:#888;padding:7px 14px;font-size:13px" onclick="adminOut()">Sign out</button>
+    </div>
+  </div>
+
   <div class="nav">
     <button class="nt on" id="na" onclick="sec('a')">Attendees</button>
     <button class="nt" id="np" onclick="sec('p')">Add participant</button>
@@ -97,17 +115,17 @@ tr:last-child td{border-bottom:none}
   <div id="sp" style="display:none">
     <div class="card">
       <p class="sl">Add participant by email</p>
-      <p style="font-size:14px;color:#666;margin-bottom:12px">Looks up existing profile and registers them. If not found, you can create them on the spot.</p>
+      <p style="font-size:14px;color:#555;margin-bottom:12px">Looks up existing profile and registers them. If not found, you can create them on the spot.</p>
       <input type="email" id="ae" placeholder="participant@email.com">
       <button class="btn" onclick="addP()">Look up &amp; register</button>
       <div id="am"></div>
     </div>
     <div class="card" id="create-card" style="display:none">
       <p class="sl">Create new participant</p>
-      <p style="font-size:14px;color:#666;margin-bottom:12px">No profile found. Enter their details to create and register them now.</p>
+      <p style="font-size:14px;color:#555;margin-bottom:12px">No profile found. Enter their details to create and register them now.</p>
       <input type="text" id="cfn" placeholder="First name">
       <input type="text" id="cln" placeholder="Last name">
-      <input type="email" id="ce" placeholder="Email" readonly style="background:#f0f0f0;color:#888">
+      <input type="email" id="ce" placeholder="Email" readonly style="background:#f0f0f0;color:#555">
       <button class="btn" onclick="createP()">Create &amp; register</button>
       <div id="cm"></div>
     </div>
@@ -116,7 +134,7 @@ tr:last-child td{border-bottom:none}
   <div id="sm" style="display:none">
     <div class="card">
       <p class="sl">Release matches</p>
-      <p style="font-size:14px;color:#666;margin-bottom:1rem">Computes all mutual Date+Date and Friend+Friend picks. Participants see matches immediately. Scheduled for <strong>9:30 PM tonight.</strong></p>
+      <p style="font-size:14px;color:#555;margin-bottom:1rem">Computes all mutual Date+Date and Friend+Friend picks. Participants see matches immediately.</p>
       <button class="btn btn-g" style="padding:12px 24px;font-size:15px" onclick="doRelease()">&#10024; Compute &amp; release now</button>
       <div id="mm"></div>
     </div>
@@ -126,7 +144,7 @@ tr:last-child td{border-bottom:none}
     </div>
     <div class="card">
       <p class="sl">Who has submitted picks</p>
-      <button class="btn btn-out" style="padding:6px 12px;font-size:13px;margin-bottom:12px" onclick="loadWhoSubmitted()">&#8635; Refresh</button>
+      <button class="btn btn-out" style="padding:6px 12px;font-size:13px;margin-bottom:12px" onclick="loadWhoSubmitted([])">&#8635; Refresh</button>
       <div id="ws"><span class="sp"></span></div>
     </div>
   </div>
@@ -145,7 +163,7 @@ tr:last-child td{border-bottom:none}
     </div>
     <div class="card">
       <p class="sl">All picks (full feedback)</p>
-      <p style="font-size:13px;color:#888;margin-bottom:8px">Every pick submitted — mutual or one-sided.</p>
+      <p style="font-size:13px;color:#555;margin-bottom:8px">Every pick submitted -- mutual or one-sided.</p>
       <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center">
         <select id="pick-filter" onchange="filterPicks()" style="padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fafafa;flex:1">
           <option value="">All participants</option>
@@ -161,18 +179,67 @@ tr:last-child td{border-bottom:none}
 <script>
 var S='https://qgctltxcgsnbrdtbhmay.supabase.co';
 var AN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnY3RsdHhjZ3NuYnJkdGJobWF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMjgwNTcsImV4cCI6MjA5MDYwNDA1N30.-TS1CofnGMGAj38OrZAvtphbHPXQWZWtysO83_960M4';
-var EV='d2b033e6-a79f-44e1-8282-f030bea541c0';
 var PASS='smitten2026';
+var EV=null;
+var ALL_PICKS_DATA=[];
+
+function hdrs(){return{apikey:AN,Authorization:'Bearer '+AN,'Content-Type':'application/json'};}
+async function rpc(fn,args){
+  var r=await fetch(S+'/rest/v1/rpc/'+fn,{method:'POST',headers:hdrs(),body:JSON.stringify(args)});
+  return r.json();
+}
 
 function login(){
   var p=document.getElementById('pw').value;
   if(p===PASS){
     document.getElementById('vl').style.display='none';
-    document.getElementById('va').style.display='';
-    loadAtt();
+    document.getElementById('vep').style.display='';
+    loadEvents();
   } else {
     document.getElementById('le').innerHTML='<div class="al er">Wrong password.</div>';
   }
+}
+
+async function loadEvents(){
+  var sel=document.getElementById('ev-sel');
+  sel.innerHTML='<option value="">Loading...</option>';
+  var r=await fetch(S+'/rest/v1/events?select=id,name,event_date,start_time,city,state&order=event_date.desc',{headers:hdrs()});
+  var events=await r.json();
+  if(!events||!events.length){
+    sel.innerHTML='<option value="">No events found</option>';
+    return;
+  }
+  sel.innerHTML='<option value="">-- Select an event --</option>'
+    +events.map(function(ev){
+      var dt=ev.event_date?new Date(ev.event_date+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}):'';
+      var loc=[ev.city,ev.state].filter(Boolean).join(', ');
+      var label=(ev.name||'Event')+(dt?' - '+dt:'')+(loc?' ('+loc+')':'');
+      return '<option value="'+ev.id+'">'+label+'</option>';
+    }).join('');
+}
+
+function enterEvent(){
+  var sel=document.getElementById('ev-sel');
+  var id=sel.value;
+  var label=sel.options[sel.selectedIndex]&&sel.options[sel.selectedIndex].text;
+  if(!id){
+    document.getElementById('epm').innerHTML='<div class="al er">Please select an event.</div>';
+    return;
+  }
+  EV=id;
+  document.getElementById('ev-sub').textContent=label;
+  document.getElementById('vep').style.display='none';
+  document.getElementById('va').style.display='';
+  sec('a');
+  loadAtt();
+}
+
+function switchEvent(){
+  EV=null;
+  document.getElementById('va').style.display='none';
+  document.getElementById('vep').style.display='';
+  document.getElementById('epm').innerHTML='';
+  loadEvents();
 }
 
 function sec(s){
@@ -184,18 +251,11 @@ function sec(s){
   if(s==='r')loadResults();
 }
 
-function hdrs(){return{apikey:AN,Authorization:'Bearer '+AN,'Content-Type':'application/json'}}
-
-async function rpc(fn,args){
-  var r=await fetch(S+'/rest/v1/rpc/'+fn,{method:'POST',headers:hdrs(),body:JSON.stringify(args)});
-  return r.json();
-}
-
 async function loadAtt(){
   var el=document.getElementById('at');
   el.innerHTML='<div style="text-align:center;padding:1rem"><span class="sp"></span></div>';
   var d=await rpc('admin_get_registrations',{p_event_id:EV,p_admin_secret:PASS});
-  if(!d||!d.length){el.innerHTML='<p style="color:#999;text-align:center;padding:1.5rem">No registrations yet.</p>';return;}
+  if(!d||!d.length){el.innerHTML='<p style="color:#555;text-align:center;padding:1.5rem">No registrations yet.</p>';return;}
   var men=d.filter(function(r){return r.gender==='Male';}).length;
   var women=d.filter(function(r){return r.gender==='Female';}).length;
   var checkedIn=d.filter(function(r){return !!r.checked_in_at;}).length;
@@ -203,22 +263,22 @@ async function loadAtt(){
     +'<span style="background:#e3f2fd;color:#1565c0;padding:4px 12px;border-radius:99px;font-size:13px;font-weight:600">'+men+' Men</span>'
     +'<span style="background:#fce4ec;color:#880e4f;padding:4px 12px;border-radius:99px;font-size:13px;font-weight:600">'+women+' Women</span>'
     +'<span style="background:#e8f5e9;color:#2e7d32;padding:4px 12px;border-radius:99px;font-size:13px;font-weight:600">&#10003; '+checkedIn+' Checked in</span>'
-    +'<span style="background:#f5f5f5;color:#555;padding:4px 12px;border-radius:99px;font-size:13px;font-weight:600">'+d.length+' Total</span>'
+    +'<span style="background:#f5f5f5;color:#333;padding:4px 12px;border-radius:99px;font-size:13px;font-weight:600">'+d.length+' Total</span>'
     +'</div>';
-  el.innerHTML=summary+'<table><thead><tr><th></th><th>Name</th><th>Email</th><th>Photo</th><th>Status</th><th>Action</th></tr></thead><tbody>'
+  el.innerHTML=summary+'<table><thead><tr><th>Name</th><th>Email</th><th>Photo</th><th>Status</th><th>Action</th></tr></thead><tbody>'
   +d.map(function(reg){
     var name=((reg.first_name||'')+(reg.last_name?' '+reg.last_name[0]+'.':'')).trim()||'Unknown';
     var ci=!!reg.checked_in_at;
     return '<tr>'
       +'<td style="font-weight:500">'+name+'</td>'
-      +'<td style="color:#888;font-size:13px">'+(reg.email||'')+'</td>'
-      +'<td>'+(reg.image_url?'<img src="'+reg.image_url+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;vertical-align:middle">':'<div style="width:36px;height:36px;border-radius:50%;background:#eee;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#aaa;vertical-align:middle">'+( reg.first_name||'?')[0].toUpperCase()+'</div>')+'</td>'
+      +'<td style="color:#555;font-size:13px">'+(reg.email||'')+'</td>'
+      +'<td>'+(reg.image_url?'<img src="'+reg.image_url+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;vertical-align:middle">':'<div style="width:36px;height:36px;border-radius:50%;background:#eee;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#888;vertical-align:middle">'+(reg.first_name||'?')[0].toUpperCase()+'</div>')+'</td>'
       +'<td><span class="badge '+(ci?'bi':'br')+'">'+(ci?'Checked in':'Registered')+'</span></td>'
       +'<td><div class="actions">'+(ci
         ?'<button class="btn btn-gray" style="font-size:12px;padding:5px 10px" onclick="doCO(\''+reg.id+'\',this)">Check out</button>'
         :'<button class="btn" style="font-size:12px;padding:5px 10px" onclick="doCI(\''+reg.id+'\',this)">Check in</button>')
       +'<button class="btn btn-out" style="font-size:12px;padding:5px 10px;border-color:#2e7d32;color:#2e7d32" onclick="loginAs(\''+reg.email+'\',this)">Login as</button>'
-      +'<button class="btn btn-out" style="font-size:12px;padding:5px 10px;border-color:#b71c1c;color:#b71c1c" onclick="removeP(\''+reg.id+'\',\''+( reg.first_name||'participant')+'\',this)">Remove</button>'
+      +'<button class="btn btn-out" style="font-size:12px;padding:5px 10px;border-color:#b71c1c;color:#b71c1c" onclick="removeP(\''+reg.id+'\',\''+(reg.first_name||'participant')+'\',this)">Remove</button>'
       +'</div></td></tr>';
   }).join('')+'</tbody></table>';
 }
@@ -289,13 +349,13 @@ async function createP(){
 async function loadPS(){
   var el=document.getElementById('ps');
   var summary=await rpc('admin_get_picks_summary',{p_event_id:EV,p_admin_secret:PASS});
-  if(!summary){el.innerHTML='<p style="color:#999">Could not load.</p>';return;}
+  if(!summary){el.innerHTML='<p style="color:#555">Could not load.</p>';return;}
   var total=(summary.date||0)+(summary.friend||0)+(summary.not_again||0);
   el.innerHTML='<table>'
     +'<tr><td>Date picks</td><td><strong>'+(summary.date||0)+'</strong></td></tr>'
     +'<tr><td>Friend picks</td><td><strong>'+(summary.friend||0)+'</strong></td></tr>'
     +'<tr><td>Not again</td><td><strong>'+(summary.not_again||0)+'</strong></td></tr>'
-    +'<tr><td style="color:#888">Total submitted</td><td><strong>'+total+'</strong></td></tr>'
+    +'<tr><td style="color:#555">Total submitted</td><td><strong>'+total+'</strong></td></tr>'
     +'</table>';
   loadWhoSubmitted(summary.submitters||[]);
 }
@@ -304,17 +364,15 @@ async function loadWhoSubmitted(submitterIds){
   var el=document.getElementById('ws');
   if(!el)return;
   var d=await rpc('admin_get_registrations',{p_event_id:EV,p_admin_secret:PASS});
-  if(!d||!d.length){el.innerHTML='<p style="color:#999">No registrations yet.</p>';return;}
-  // submitterIds may be a JSON array of UUID strings
+  if(!d||!d.length){el.innerHTML='<p style="color:#555">No registrations yet.</p>';return;}
   var submitterArr=[];
   if(Array.isArray(submitterIds)){submitterArr=submitterIds;}
   else if(submitterIds&&typeof submitterIds==='object'){submitterArr=Object.values(submitterIds);}
-  // Stringify all IDs for safe comparison
   var submitted=new Set(submitterArr.map(function(s){return String(s);}));
   var total=d.length;
   var done=d.filter(function(r){return submitted.has(String(r.profile_id));}).length;
-  if(done===0){el.innerHTML='<p style="color:#999;padding:8px 0">No picks submitted yet.</p>';return;}
-  el.innerHTML='<p style="font-size:14px;color:#555;margin-bottom:10px"><strong>'+done+' of '+total+'</strong> participants have submitted picks.</p>'
+  if(done===0){el.innerHTML='<p style="color:#555;padding:8px 0">No picks submitted yet.</p>';return;}
+  el.innerHTML='<p style="font-size:14px;color:#333;margin-bottom:10px"><strong>'+done+' of '+total+'</strong> participants have submitted picks.</p>'
     +'<table><thead><tr><th>Name</th><th>Picks submitted</th></tr></thead><tbody>'
     +d.map(function(reg){
       var name=((reg.first_name||'')+(reg.last_name?' '+reg.last_name[0]+'.':'')).trim()||'Unknown';
@@ -334,7 +392,6 @@ async function doRelease(){
     msg.innerHTML='<div class="al er">Error: '+e.message+'</div>';
   }
 }
-var ALL_PICKS_DATA = [];
 
 function filterPicks(){
   var filter=document.getElementById('pick-filter').value;
@@ -342,28 +399,26 @@ function filterPicks(){
   var filtered=filter?ALL_PICKS_DATA.filter(function(p){
     return (p.picker_first+' '+p.picker_last).trim()===filter||(p.picked_first+' '+p.picked_last).trim()===filter;
   }):ALL_PICKS_DATA;
-  if(!filtered.length){el.innerHTML='<p style="color:#999;text-align:center;padding:1rem">No picks found.</p>';return;}
+  if(!filtered.length){el.innerHTML='<p style="color:#555;text-align:center;padding:1rem">No picks found.</p>';return;}
   el.innerHTML='<table><thead><tr><th>From</th><th>To</th><th>Pick</th><th>Result</th></tr></thead><tbody>'
   +filtered.map(function(p){
-    var pt=p.pick_type==='date'?'<span class="badge" style="background:#fdecea;color:#b71c1c">Date</span>':p.pick_type==='friend'?'<span class="badge" style="background:#e3f2fd;color:#1565c0">Friend</span>':'<span class="badge" style="background:#eee;color:#888">Not again</span>';
-    var result=p.is_mutual?'<span style="color:#2e7d32;font-weight:600">&#10024; Mutual</span>':'<span style="color:#aaa">One-sided</span>';
+    var pt=p.pick_type==='date'?'<span class="badge" style="background:#fdecea;color:#b71c1c">Date</span>':p.pick_type==='friend'?'<span class="badge" style="background:#e3f2fd;color:#1565c0">Friend</span>':'<span class="badge" style="background:#eee;color:#555">Not again</span>';
+    var result=p.is_mutual?'<span style="color:#2e7d32;font-weight:600">&#10024; Mutual</span>':'<span style="color:#888">One-sided</span>';
     return '<tr><td style="font-weight:500">'+(p.picker_first||'')+' '+(p.picker_last||'')+'</td><td>'+(p.picked_first||'')+' '+(p.picked_last||'')+'</td><td>'+pt+'</td><td>'+result+'</td></tr>';
   }).join('')+'</tbody></table>';
 }
 
-async function loginAs(email, btn){
+async function loginAs(email,btn){
   window.open('https://event-app.smittensingles.com/pick.html?email='+encodeURIComponent(email),'_blank');
 }
 
-async function removeP(rid, name, btn){
+async function removeP(rid,name,btn){
   if(!confirm('Remove '+name+' from the event?'))return;
   btn.disabled=true;btn.textContent='...';
   var d=await rpc('admin_remove_registration',{p_registration_id:rid,p_admin_secret:PASS});
   if(d&&d.ok)loadAtt();
   else{btn.disabled=false;btn.textContent='Remove';alert('Failed. Try again.');}
 }
-
-function adminOut(){document.getElementById('va').style.display='none';document.getElementById('vl').style.display='';document.getElementById('pw').value='';}
 
 async function loadResults(){
   var mr=document.getElementById('mr');
@@ -376,7 +431,7 @@ async function loadResults(){
   var unmatched=await rpc('admin_get_unmatched',{p_event_id:EV,p_admin_secret:PASS});
   var allpicks=await rpc('admin_get_all_picks',{p_event_id:EV,p_admin_secret:PASS});
   if(!matches||!matches.length){
-    mr.innerHTML='<p style="color:#999;text-align:center;padding:1rem">No matches released yet.</p>';
+    mr.innerHTML='<p style="color:#555;text-align:center;padding:1rem">No matches released yet.</p>';
   } else {
     mr.innerHTML='<table><thead><tr><th>Person 1</th><th>Person 2</th><th>Type</th></tr></thead><tbody>'
     +matches.map(function(m){
@@ -392,14 +447,13 @@ async function loadResults(){
     um.innerHTML='<table><thead><tr><th>Name</th><th>Email</th></tr></thead><tbody>'
     +unmatched.map(function(u){
       var un=(u.first_name||'')+(u.last_name?' '+u.last_name[0]+'.':'');
-      return '<tr><td style="font-weight:500">'+un+'</td><td style="color:#888;font-size:13px">'+(u.email||'')+'</td></tr>';
+      return '<tr><td style="font-weight:500">'+un+'</td><td style="color:#555;font-size:13px">'+(u.email||'')+'</td></tr>';
     }).join('')+'</tbody></table>';
   }
   if(!allpicks||!allpicks.length){
-    ap.innerHTML='<p style="color:#999;text-align:center;padding:1rem">No picks submitted yet.</p>';
+    ap.innerHTML='<p style="color:#555;text-align:center;padding:1rem">No picks submitted yet.</p>';
   } else {
     ALL_PICKS_DATA=allpicks;
-    // Populate filter dropdown
     var names=new Set();
     allpicks.forEach(function(p){
       names.add((p.picker_first||'')+' '+(p.picker_last||'').trim());
@@ -412,6 +466,13 @@ async function loadResults(){
     });
     filterPicks();
   }
+}
+
+function adminOut(){
+  EV=null;
+  document.getElementById('va').style.display='none';
+  document.getElementById('vl').style.display='';
+  document.getElementById('pw').value='';
 }
 </script>
 </body>
