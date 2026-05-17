@@ -111,6 +111,44 @@ tr:last-child td{border-bottom:none}
     </select>
     <button class="btn btn-full" onclick="enterEvent()">Open event</button>
     <div id="epm" style="margin-top:8px"></div>
+    <!-- Super admin only -->
+    <div id="manage-hosts-link" style="display:none;margin-top:16px;text-align:center">
+      <button class="tlink" onclick="sv('vh')">Manage hosts &amp; admins</button>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE HOSTS (super_admin only) -->
+<div id="vh" style="display:none">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+    <h1>Manage Hosts</h1>
+    <div style="display:flex;gap:8px">
+      <button class="btn" style="background:#555;padding:7px 14px;font-size:13px" onclick="sv('vep')">Back</button>
+      <button class="btn" style="background:#888;padding:7px 14px;font-size:13px" onclick="signOut()">Sign out</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sl">Add host or admin</p>
+    <p style="font-size:14px;color:#555;margin-bottom:12px">Enter the person's details. They will be able to sign in to this admin portal immediately.</p>
+    <input type="text" id="hfn" placeholder="First name">
+    <input type="text" id="hln" placeholder="Last name">
+    <input type="email" id="he" placeholder="Email">
+    <label style="font-size:13px;color:#555;display:block;margin-bottom:6px">Role</label>
+    <select id="hrole" style="margin-bottom:12px">
+      <option value="host">Host</option>
+      <option value="super_admin">Super Admin</option>
+    </select>
+    <button class="btn" onclick="addHost()">Add</button>
+    <div id="hm" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <p class="sl" style="margin:0">Current hosts &amp; admins</p>
+      <button class="btn btn-out" style="padding:6px 12px;font-size:13px" onclick="loadHosts()">&#8635; Refresh</button>
+    </div>
+    <div id="hl"><span class="sp"></span></div>
   </div>
 </div>
 
@@ -127,7 +165,7 @@ tr:last-child td{border-bottom:none}
     </div>
   </div>
 
-  <div class="nav">
+  <div class="nav" id="main-nav">
     <button class="nt on" id="na" onclick="sec('a')">Attendees</button>
     <button class="nt" id="np" onclick="sec('p')">Add participant</button>
     <button class="nt" id="nm" onclick="sec('m')">Release matches</button>
@@ -212,9 +250,10 @@ tr:last-child td{border-bottom:none}
 var S='https://qgctltxcgsnbrdtbhmay.supabase.co';
 var AN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnY3RsdHhjZ3NuYnJkdGJobWF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMjgwNTcsImV4cCI6MjA5MDYwNDA1N30.-TS1CofnGMGAj38OrZAvtphbHPXQWZWtysO83_960M4';
 var PASS='smitten2026';
-var SES=null,UID=null,EV=null,OTP_EMAIL='',ALL_PICKS_DATA=[];
+var ORG_ID='fc511c38-937d-4a1a-bfe2-28ce4c7c7744';
+var SES=null,UID=null,ROLE=null,EV=null,OTP_EMAIL='',ALL_PICKS_DATA=[];
 
-function sv(v){['vl','votp','vd','vep','va'].forEach(function(n){document.getElementById(n).style.display=n===v?'':'none';});}
+function sv(v){['vl','votp','vd','vep','vh','va'].forEach(function(n){document.getElementById(n).style.display=n===v?'':'none';});}
 function saveSes(){localStorage.setItem('ss_admin_s',JSON.stringify({t:SES.t,r:SES.r}));}
 function hdrs(){return{apikey:AN,Authorization:'Bearer '+(SES&&SES.t||AN),'Content-Type':'application/json'};}
 async function rpc(fn,args){
@@ -257,10 +296,7 @@ function otpPaste(e){
 function getOtpValue(){
   return Array.from(document.querySelectorAll('#otp-boxes input')).map(function(b){return b.value;}).join('');
 }
-function showEmailCard(){
-  sv('vl');
-  document.getElementById('em').innerHTML='';
-}
+function showEmailCard(){sv('vl');document.getElementById('em').innerHTML='';}
 
 async function doSendOtp(resend){
   var e=resend?OTP_EMAIL:document.getElementById('ei').value.trim().toLowerCase();
@@ -301,13 +337,13 @@ async function doVerifyOtp(){
 }
 
 async function checkAccess(){
-  // Check staff table using authenticated request
+  // Try to link auth user to staff row by email (handles first-time login for pre-created hosts)
+  await fetch(S+'/rest/v1/rpc/staff_link_user',{method:'POST',headers:hdrs(),body:JSON.stringify({p_email:OTP_EMAIL})});
+  // Now check staff row
   var r=await fetch(S+'/rest/v1/staff?user_id=eq.'+UID+'&is_active=eq.true&select=id,role&limit=1',{headers:hdrs()});
   var staff=r.ok?await r.json():[];
-  if(!staff||!staff.length){
-    sv('vd');
-    return;
-  }
+  if(!staff||!staff.length){sv('vd');return;}
+  ROLE=staff[0].role;
   loadEvents();
 }
 
@@ -341,6 +377,9 @@ async function init(){
 // Event picker
 async function loadEvents(){
   sv('vep');
+  // Show manage hosts link for super_admin only
+  document.getElementById('manage-hosts-link').style.display=ROLE==='super_admin'?'':'none';
+  if(ROLE==='super_admin')loadHosts();
   var sel=document.getElementById('ev-sel');
   sel.innerHTML='<option value="">Loading...</option>';
   var r=await fetch(S+'/rest/v1/events?select=id,name,event_date,start_time,city,state&order=event_date.desc',{headers:hdrs()});
@@ -367,16 +406,78 @@ function enterEvent(){
   loadAtt();
 }
 
-function switchEvent(){
-  EV=null;
-  document.getElementById('epm').innerHTML='';
-  loadEvents();
-}
+function switchEvent(){EV=null;document.getElementById('epm').innerHTML='';loadEvents();}
 
 function signOut(){
   localStorage.removeItem('ss_admin_s');
-  SES=null;UID=null;EV=null;
+  SES=null;UID=null;ROLE=null;EV=null;
   sv('vl');
+}
+
+// Manage hosts
+async function loadHosts(){
+  var el=document.getElementById('hl');
+  el.innerHTML='<span class="sp"></span>';
+  var r=await fetch(S+'/rest/v1/staff?is_active=eq.true&select=id,first_name,last_name,email,role&order=role.asc,first_name.asc',{headers:hdrs()});
+  var staff=r.ok?await r.json():[];
+  if(!staff.length){el.innerHTML='<p style="color:#555;padding:8px 0">No staff found.</p>';return;}
+  el.innerHTML='<table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th></th></tr></thead><tbody>'
+    +staff.map(function(s){
+      var name=((s.first_name||'')+(s.last_name?' '+s.last_name:'')).trim()||'Unknown';
+      var roleLabel=s.role==='super_admin'?'<span class="badge" style="background:#fce4ec;color:#880e4f">Super Admin</span>':'<span class="badge bi">Host</span>';
+      var isSelf=s.email&&s.email.toLowerCase()===OTP_EMAIL.toLowerCase();
+      return '<tr><td style="font-weight:500">'+name+(isSelf?' <span style="font-size:11px;color:#888">(you)</span>':'')+'</td>'
+        +'<td style="color:#555;font-size:13px">'+(s.email||'')+'</td>'
+        +'<td>'+roleLabel+'</td>'
+        +'<td>'+(isSelf?'':'<button class="btn btn-out" style="font-size:12px;padding:4px 10px;border-color:#b71c1c;color:#b71c1c" onclick="deactivateHost(\''+s.id+'\',\''+(s.first_name||'this person')+'\',this)">Remove</button>')+'</td>'
+        +'</tr>';
+    }).join('')+'</tbody></table>';
+}
+
+async function addHost(){
+  var fn=document.getElementById('hfn').value.trim();
+  var ln=document.getElementById('hln').value.trim();
+  var email=document.getElementById('he').value.trim().toLowerCase();
+  var role=document.getElementById('hrole').value;
+  var msg=document.getElementById('hm');
+  if(!fn||!email){msg.innerHTML='<div class="al er">First name and email are required.</div>';return;}
+  msg.innerHTML='<div class="al inf"><span class="sp"></span> Adding&hellip;</div>';
+  // Check if already exists
+  var chk=await fetch(S+'/rest/v1/staff?email=eq.'+encodeURIComponent(email)+'&select=id,is_active',{headers:hdrs()});
+  var existing=chk.ok?await chk.json():[];
+  if(existing.length){
+    if(existing[0].is_active){
+      msg.innerHTML='<div class="al inf">A staff member with that email already exists.</div>';
+      return;
+    }
+    // Reactivate
+    var ra=await fetch(S+'/rest/v1/staff?id=eq.'+existing[0].id,{method:'PATCH',headers:Object.assign({},hdrs(),{Prefer:'return=minimal'}),body:JSON.stringify({is_active:true,role:role,first_name:fn,last_name:ln||null})});
+    if(ra.ok){
+      msg.innerHTML='<div class="al ok">'+fn+' reactivated as '+role+'.</div>';
+      document.getElementById('hfn').value='';document.getElementById('hln').value='';document.getElementById('he').value='';
+      loadHosts();
+    } else {
+      msg.innerHTML='<div class="al er">Error updating. Try again.</div>';
+    }
+    return;
+  }
+  // Insert new — user_id will be linked when they first sign in via OTP (auth.users created on first OTP)
+  var ins=await fetch(S+'/rest/v1/staff',{method:'POST',headers:Object.assign({},hdrs(),{Prefer:'return=minimal'}),body:JSON.stringify({first_name:fn,last_name:ln||null,email:email,role:role,organization_id:ORG_ID,is_active:true})});
+  if(ins.ok){
+    msg.innerHTML='<div class="al ok">'+fn+' added as '+role+'. They can now sign in with their email.</div>';
+    document.getElementById('hfn').value='';document.getElementById('hln').value='';document.getElementById('he').value='';
+    loadHosts();
+  } else {
+    msg.innerHTML='<div class="al er">Error adding. Try again.</div>';
+  }
+}
+
+async function deactivateHost(id,name,btn){
+  if(!confirm('Remove '+name+' from admin access?'))return;
+  btn.disabled=true;btn.textContent='...';
+  var r=await fetch(S+'/rest/v1/staff?id=eq.'+id,{method:'PATCH',headers:Object.assign({},hdrs(),{Prefer:'return=minimal'}),body:JSON.stringify({is_active:false})});
+  if(r.ok)loadHosts();
+  else{btn.disabled=false;btn.textContent='Remove';alert('Failed. Try again.');}
 }
 
 // Admin sections
@@ -446,8 +547,7 @@ async function addP(){
     if(d&&d.error&&d.error.indexOf('No profile')>-1){
       msg.innerHTML='<div class="al inf">No profile found. Fill in details below to create them.</div>';
       document.getElementById('ce').value=email;
-      document.getElementById('cfn').value='';
-      document.getElementById('cln').value='';
+      document.getElementById('cfn').value='';document.getElementById('cln').value='';
       document.getElementById('cm').innerHTML='';
       cc.style.display='';
     } else {
@@ -457,8 +557,7 @@ async function addP(){
     msg.innerHTML='<div class="al inf">'+(d.first_name||email)+' is already registered.</div>';
   } else {
     msg.innerHTML='<div class="al ok">'+(d.first_name||email)+' registered!</div>';
-    document.getElementById('ae').value='';
-    loadAtt();
+    document.getElementById('ae').value='';loadAtt();
   }
 }
 
@@ -478,8 +577,7 @@ async function createP(){
     msg.innerHTML='<div class="al ok">'+fn+' created and registered!</div>';
     document.getElementById('ae').value='';
     document.getElementById('create-card').style.display='none';
-    document.getElementById('am').innerHTML='';
-    loadAtt();
+    document.getElementById('am').innerHTML='';loadAtt();
   }
 }
 
