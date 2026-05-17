@@ -95,7 +95,7 @@ input:focus,select:focus{border-color:#C6302C}
     <button class="tlink" onclick="doSendOtp(true)" style="margin-top:6px">Resend code</button>
   </div>
 
-  <p style="font-size:12px;color:#bbb;text-align:center;margin-top:8px">You must be registered for an event to sign in.</p>
+  <p style="font-size:12px;color:#bbb;text-align:center;margin-top:8px">Don't have an account? One will be created for you automatically.</p>
 </div>
 
 <!-- LOADING VIEW -->
@@ -240,7 +240,7 @@ async function doSendOtp(resend){
   OTP_EMAIL=e;
   var b=document.getElementById('otpb');
   b.disabled=true;b.innerHTML='<span class="sp"></span>Sending&hellip;';
-  var r=await fetch(S+'/auth/v1/otp',{method:'POST',headers:{'Content-Type':'application/json',apikey:AN},body:JSON.stringify({email:e,options:{shouldCreateUser:false}})});
+  var r=await fetch(S+'/auth/v1/otp',{method:'POST',headers:{'Content-Type':'application/json',apikey:AN},body:JSON.stringify({email:e})});
   b.disabled=false;b.textContent='Send code';
   if(!r.ok){
     var err=await r.json();
@@ -310,10 +310,8 @@ async function loadEventPicker(){
   events.sort(function(a,b){return (a.event_date||'').localeCompare(b.event_date||'');});
 
   if(!events.length){
-    sv('vl');
-    document.getElementById('em').innerHTML='<div class="al er">No events found for your account. Please contact your host.</div>';
-    document.getElementById('card-email').style.display='';
-    document.getElementById('card-otp').style.display='none';
+    document.getElementById("ev-list").innerHTML='<div class="card"><div class="empty" style="padding:1.5rem 0">No upcoming events found for your account.<br><br><a href="https://smittensingles.com" style="color:#C6302C;font-weight:600">View upcoming events at smittensingles.com</a></div></div>';
+    sv("ve");
     return;
   }
 
