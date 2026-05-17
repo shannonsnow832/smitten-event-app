@@ -14,7 +14,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .app{max-width:480px;margin:0 auto;padding:1.5rem 1rem}
 .logo{text-align:center;margin-bottom:1.5rem}
 .logo h1{font-size:22px;font-weight:700;color:#C6302C}
-.logo p{font-size:13px;color:#666;margin-top:4px}
+.logo p{font-size:13px;color:#333;margin-top:4px}
 .card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
 input,select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:15px;background:#fafafa;color:#1a1a1a;outline:none;margin-bottom:10px}
 input:focus,select:focus{border-color:#C6302C}
@@ -22,53 +22,48 @@ input:focus,select:focus{border-color:#C6302C}
 .btn:hover{background:#a8231f}
 .btn:disabled{background:#ccc;cursor:not-allowed}
 .btn-gray{background:#888}.btn-gray:hover{background:#555}
-.btn-outline{background:transparent;border:2px solid #C6302C;color:#C6302C;display:block;width:100%;padding:11px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;text-align:center;margin-bottom:10px}
-.btn-outline:hover{background:#C6302C;color:#fff}
 .nav{display:flex;border-bottom:1px solid #e8e8e8;margin-bottom:1rem;background:#fff;position:sticky;top:0;z-index:10}
-.nt{flex:1;padding:11px 4px;background:transparent;border:none;font-size:13px;cursor:pointer;color:#999;border-bottom:2px solid transparent;white-space:nowrap}
+.nt{flex:1;padding:11px 4px;background:transparent;border:none;font-size:13px;cursor:pointer;color:#555;border-bottom:2px solid transparent;white-space:nowrap}
 .nt.on{color:#C6302C;border-bottom-color:#C6302C;font-weight:600}
-.nt-so{flex:none;padding:11px 10px;background:transparent;border:none;font-size:13px;cursor:pointer;color:#999}
+.nt-so{flex:none;padding:11px 10px;background:transparent;border:none;font-size:13px;cursor:pointer;color:#555}
 .row{padding:12px 0;border-bottom:1px solid #f2f2f2}.row:last-child{border-bottom:none}
 .top{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.av{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#eee;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:#999}
+.av{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#eee;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:#555}
 .opts{display:flex;gap:5px;padding-left:56px}
-.opt{flex:1;padding:6px 2px;border-radius:8px;border:1px solid #ddd;background:transparent;font-size:11px;font-weight:600;cursor:pointer;color:#999;text-align:center}
+.opt{flex:1;padding:6px 2px;border-radius:8px;border:1px solid #ddd;background:transparent;font-size:11px;font-weight:600;cursor:pointer;color:#555;text-align:center}
 .opt.sd{background:#C6302C;border-color:#C6302C;color:#fff}
 .opt.sf{background:#185FA5;border-color:#185FA5;color:#fff}
-.opt.sn{background:#777;border-color:#777;color:#fff}
-.opt.sx{background:#eee;border-color:#ddd;color:#999}
+.opt.sn{background:#555;border-color:#555;color:#fff}
 .al{padding:10px 14px;border-radius:8px;font-size:14px;margin-bottom:10px}
-.ok{background:#e8f5e9;color:#2e7d32}.er{background:#fdecea;color:#b71c1c}.inf{background:#e3f2fd;color:#1565c0}
+.ok{background:#e8f5e9;color:#1b5e20}.er{background:#fdecea;color:#7f0000}.inf{background:#e3f2fd;color:#0d47a1}
 .mrow{padding:12px 0;border-bottom:1px solid #f2f2f2}.mrow:last-child{border-bottom:none}
 .pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600}
-.pd{background:#fdecea;color:#b71c1c}.pf{background:#e3f2fd;color:#1565c0}
+.pd{background:#fdecea;color:#7f0000}.pf{background:#e3f2fd;color:#0d47a1}
 .cbtn{margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid #C6302C;background:transparent;color:#C6302C;font-size:13px;cursor:pointer}
 .cbtn:hover{background:#C6302C;color:#fff}
 .bbl{padding:8px 12px;border-radius:16px;font-size:14px;max-width:78%;line-height:1.4;margin-bottom:4px}
 .bm{background:#C6302C;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
 .bt{background:#efefef;color:#1a1a1a;align-self:flex-start;border-bottom-left-radius:4px}
-.ts{font-size:11px;color:#bbb;text-align:center;margin:2px 0 8px}
+.ts{font-size:11px;color:#555;text-align:center;margin:2px 0 8px}
 .ci{display:flex;gap:8px;margin-top:8px}.ci input{flex:1;margin:0}
 .sb2{padding:10px 14px;background:#C6302C;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:15px}
-.empty{text-align:center;padding:2rem 1rem;color:#999;font-size:14px}
+.empty{text-align:center;padding:2rem 1rem;color:#333;font-size:14px}
 .sp{display:inline-block;width:16px;height:16px;border:2px solid rgba(198,48,44,.2);border-top-color:#C6302C;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes sp{to{transform:rotate(360deg)}}
-.leg{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;font-size:12px;color:#888}
+.leg{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;font-size:12px;color:#333}
 .ld{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:4px}
 .pp{width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid #eee}
 .upbtn{margin-top:8px;padding:7px 14px;border:1px solid #C6302C;background:transparent;color:#C6302C;border-radius:8px;font-size:13px;cursor:pointer}
-.sl{font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.sl{font-size:12px;font-weight:700;color:#333;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
 .tlink{background:none;border:none;color:#C6302C;font-size:13px;cursor:pointer;text-decoration:underline;display:block;text-align:center;margin-top:12px}
-.tlink-gray{color:#888}
-/* OTP boxes */
+.tlink-gray{color:#333}
 .otp-wrap{display:flex;gap:8px;justify-content:center;margin-bottom:14px}
 .otp-wrap input{width:36px;height:44px;text-align:center;font-size:20px;font-weight:700;padding:0;margin:0;border:1.5px solid #ddd;border-radius:8px}
 .otp-wrap input:focus{border-color:#C6302C}
-/* Event picker */
-.ev-card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:10px;cursor:pointer;transition:border-color .15s}
+.ev-card{background:#fff;border:2px solid #e8e8e8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:10px;cursor:pointer;transition:border-color .15s}
 .ev-card:hover{border-color:#C6302C}
 .ev-name{font-size:16px;font-weight:600;color:#1a1a1a}
-.ev-meta{font-size:13px;color:#888;margin-top:3px}
+.ev-meta{font-size:13px;color:#333;margin-top:3px}
 </style>
 </head>
 <body>
@@ -79,30 +74,28 @@ input:focus,select:focus{border-color:#C6302C}
 <div id="vl">
   <div class="card" id="card-email">
     <p class="sl">Sign in</p>
-    <p style="font-size:14px;color:#666;margin-bottom:12px">Enter your email to receive an 8-digit code.</p>
+    <p style="font-size:14px;color:#333;margin-bottom:12px">Enter your email to receive an 8-digit code.</p>
     <input type="email" id="ei" placeholder="your@email.com" onkeydown="if(event.key==='Enter')doSendOtp()">
     <button class="btn" id="otpb" onclick="doSendOtp()">Send code</button>
     <div id="em" style="margin-top:10px"></div>
   </div>
-
   <div class="card" id="card-otp" style="display:none">
     <p class="sl">Enter your code</p>
-    <p style="font-size:14px;color:#666;margin-bottom:14px">We sent an 8-digit code to <strong id="otp-email-label"></strong></p>
+    <p style="font-size:14px;color:#333;margin-bottom:14px">We sent an 8-digit code to <strong id="otp-email-label"></strong></p>
     <div class="otp-wrap" id="otp-boxes"></div>
     <button class="btn" id="verifb" onclick="doVerifyOtp()">Verify</button>
     <div id="vm2" style="margin-top:10px"></div>
     <button class="tlink tlink-gray" onclick="showEmailCard()">Use a different email</button>
     <button class="tlink" onclick="doSendOtp(true)" style="margin-top:6px">Resend code</button>
   </div>
-
-  <p style="font-size:12px;color:#bbb;text-align:center;margin-top:8px">Don't have an account? One will be created for you automatically.</p>
+  <p style="font-size:12px;color:#333;text-align:center;margin-top:8px">Don't have an account? One will be created for you automatically.</p>
 </div>
 
 <!-- LOADING VIEW -->
 <div id="vc" style="display:none">
   <div class="card" style="text-align:center;padding:2.5rem">
     <span class="sp" style="width:24px;height:24px"></span>
-    <p style="margin-top:1rem;color:#888;font-size:14px">Signing you in&hellip;</p>
+    <p style="margin-top:1rem;color:#333;font-size:14px">Loading&hellip;</p>
   </div>
 </div>
 
@@ -110,7 +103,7 @@ input:focus,select:focus{border-color:#C6302C}
 <div id="ve" style="display:none">
   <div class="card" style="margin-bottom:1rem">
     <p class="sl">Your events</p>
-    <p style="font-size:14px;color:#666;margin-bottom:0">Tap an event to enter.</p>
+    <p style="font-size:14px;color:#333;margin-bottom:0">Tap an event to enter.</p>
   </div>
   <div id="ev-list"></div>
   <button class="btn btn-gray" style="margin-top:8px" onclick="signOut()">Sign out</button>
@@ -125,27 +118,23 @@ input:focus,select:focus{border-color:#C6302C}
     <button class="nt" id="tpr" onclick="tab('pr')">&#128100; Me</button>
     <button class="nt-so" onclick="goPickEvent()">&#8592; Events</button>
   </div>
-
   <div id="pp">
     <div id="pa"></div>
     <div class="leg">
       <span><span class="ld" style="background:#C6302C"></span>Date</span>
       <span><span class="ld" style="background:#185FA5"></span>Friend</span>
-      <span><span class="ld" style="background:#777"></span>Not again</span>
+      <span><span class="ld" style="background:#555"></span>Not again</span>
     </div>
     <input type="text" id="search-att" placeholder="Search..." oninput="renderAttendees(this.value)" style="margin-bottom:8px">
     <div class="card" style="padding:.75rem 1.25rem"><div id="al"><div class="empty"><span class="sp"></span></div></div></div>
     <button class="btn" id="sb" onclick="savePicks()">Save my picks</button>
-    <p style="font-size:12px;color:#bbb;text-align:center;margin-top:8px">You can update your picks until the event ends.</p>
+    <p style="font-size:12px;color:#333;text-align:center;margin-top:8px">You can update your picks until the event ends.</p>
   </div>
-
   <div id="pm" style="display:none"><div id="mc"></div></div>
-
   <div id="pcc" style="display:none">
     <div id="ch-list"></div>
     <div id="ch" style="display:none"></div>
   </div>
-
   <div id="ppr" style="display:none">
     <div class="card">
       <p class="sl">My photo</p>
@@ -158,9 +147,9 @@ input:focus,select:focus{border-color:#C6302C}
     </div>
     <div class="card">
       <p class="sl">My info</p>
-      <label style="font-size:13px;color:#888;display:block;margin-bottom:4px">Date of birth</label>
+      <label style="font-size:13px;color:#333;display:block;margin-bottom:4px">Date of birth</label>
       <input type="date" id="pdob" style="margin-bottom:12px">
-      <label style="font-size:13px;color:#888;display:block;margin-bottom:4px">Gender</label>
+      <label style="font-size:13px;color:#333;display:block;margin-bottom:4px">Gender</label>
       <select id="pgender" style="margin-bottom:12px">
         <option value="">Select gender</option>
         <option value="Male">Male</option>
@@ -174,24 +163,18 @@ input:focus,select:focus{border-color:#C6302C}
     <button class="btn btn-gray" onclick="signOut()">Sign out of event</button>
   </div>
 </div>
-</div><!-- .app -->
+</div>
 
 <script>
 var S='https://qgctltxcgsnbrdtbhmay.supabase.co';
 var AN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnY3RsdHhjZ3NuYnJkdGJobWF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMjgwNTcsImV4cCI6MjA5MDYwNDA1N30.-TS1CofnGMGAj38OrZAvtphbHPXQWZWtysO83_960M4';
+var SES=null,UID=null,PRF=null,EV=null,PX={},ACH=null,MATCHES_RELEASED=false,ALL_ATTENDEES=[],OTP_EMAIL='';
 
-// Runtime state
-var SES=null, UID=null, PRF=null, EV=null, PX={}, ACH=null, MATCHES_RELEASED=false;
-var ALL_ATTENDEES=[];
-var OTP_EMAIL='';
-
-// ── Helpers ────────────────────────────────────────────────
 function hd(x){return Object.assign({'Content-Type':'application/json',apikey:AN,Authorization:'Bearer '+(SES&&SES.t||AN)},x||{});}
 function api(p,o){return fetch(S+p,Object.assign({headers:hd()},o||{}));}
-
 function sv(v){['vl','vc','ve','vm'].forEach(function(n){document.getElementById(n).style.display=n===v?'':'none';});}
 
-// ── OTP Login ──────────────────────────────────────────────
+// OTP
 function buildOtpBoxes(){
   var w=document.getElementById('otp-boxes');
   w.innerHTML='';
@@ -204,7 +187,6 @@ function buildOtpBoxes(){
     w.appendChild(inp);
   }
 }
-
 function otpInput(e){
   var boxes=document.querySelectorAll('#otp-boxes input');
   var i=parseInt(e.target.dataset.idx);
@@ -227,7 +209,6 @@ function otpPaste(e){
 function getOtpValue(){
   return Array.from(document.querySelectorAll('#otp-boxes input')).map(function(b){return b.value;}).join('');
 }
-
 function showEmailCard(){
   document.getElementById('card-email').style.display='';
   document.getElementById('card-otp').style.display='none';
@@ -244,7 +225,7 @@ async function doSendOtp(resend){
   b.disabled=false;b.textContent='Send code';
   if(!r.ok){
     var err=await r.json();
-    document.getElementById('em').innerHTML='<div class="al er">'+(err.msg||err.error_description||'Could not send code. Are you registered for an event?')+'</div>';
+    document.getElementById('em').innerHTML='<div class="al er">'+(err.msg||err.error_description||'Something went wrong. Please try again.')+'</div>';
     return;
   }
   document.getElementById('em').innerHTML='';
@@ -275,9 +256,8 @@ async function doVerifyOtp(){
   loadEventPicker();
 }
 
-// ── Session persistence ────────────────────────────────────
+// Session
 function saveSes(){localStorage.setItem('ss_s',JSON.stringify({t:SES.t,r:SES.r}));}
-
 async function refreshSes(){
   if(!SES||!SES.r)return false;
   var r=await fetch(S+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{'Content-Type':'application/json',apikey:AN},body:JSON.stringify({refresh_token:SES.r})});
@@ -290,51 +270,44 @@ async function refreshSes(){
   return true;
 }
 
-// ── Event picker ───────────────────────────────────────────
+// Event picker
 async function loadEventPicker(){
   sv('vc');
-  // Fetch registrations + event details for this user
   var r=await api('/rest/v1/registrations?profile_id=eq.'+UID+'&select=event_id,events(id,name,event_date,start_time,city,state,status)');
   if(!r.ok){sv('vl');return;}
   var rows=await r.json();
-  // Filter to active/published events, dedupe by event_id
-  var seen={};
-  var events=[];
+  var seen={},events=[];
   rows.forEach(function(row){
     var ev=row.events;
     if(!ev||seen[ev.id])return;
     seen[ev.id]=true;
     events.push(ev);
   });
-  // Sort upcoming first
   events.sort(function(a,b){return (a.event_date||'').localeCompare(b.event_date||'');});
-
+  var el=document.getElementById('ev-list');
   if(!events.length){
-    document.getElementById("ev-list").innerHTML='<div class="card"><div class="empty" style="padding:1.5rem 0">No upcoming events found for your account.<br><br><a href="https://smittensingles.com" style="color:#C6302C;font-weight:600">View upcoming events at smittensingles.com</a></div></div>';
-    sv("ve");
+    el.innerHTML='<div class="card"><div class="empty">No upcoming events found for your account.<br><br><a href="https://smittensingles.com" style="color:#C6302C;font-weight:600">View upcoming events at smittensingles.com</a></div></div>';
+    sv('ve');
     return;
   }
-
-  // Render picker
-  var el=document.getElementById('ev-list');
   el.innerHTML=events.map(function(ev){
     var dt=ev.event_date?new Date(ev.event_date+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric'}):'';
     var loc=[ev.city,ev.state].filter(Boolean).join(', ');
     var time=ev.start_time?ev.start_time.slice(0,5):'';
-    var meta=[dt,time,loc].filter(Boolean).join(' &middot; ');
-    return '<div class="ev-card" onclick="enterEvent(\''+ev.id+'\',\''+encodeURIComponent(ev.name||'Event')+'\')">'\
-      +'<div class="ev-name">'+(ev.name||'Event')+'</div>'\
-      +(meta?'<div class="ev-meta">'+meta+'</div>':'')+'</div>';
+    var meta=[dt,time,loc].filter(Boolean).join(' \u00b7 ');
+    var id=ev.id;
+    var name=encodeURIComponent(ev.name||'Event');
+    return '<div class="ev-card" onclick="enterEvent(\''+id+'\',\''+name+'\')">'
+      +'<div class="ev-name">'+(ev.name||'Event')+'</div>'
+      +(meta?'<div class="ev-meta">'+meta+'</div>':'')
+      +'</div>';
   }).join('');
-
   sv('ve');
 }
 
-function enterEvent(evId, evName){
+function enterEvent(evId,evName){
   EV=evId;
-  // Update logo subtitle
   document.getElementById('logo-sub').textContent=decodeURIComponent(evName);
-  // Reset state for this event
   PX={};ACH=null;MATCHES_RELEASED=false;ALL_ATTENDEES=[];
   document.getElementById('search-att').value='';
   document.getElementById('al').innerHTML='<div class="empty"><span class="sp"></span></div>';
@@ -352,20 +325,17 @@ function enterEvent(evId, evName){
 function goPickEvent(){
   EV=null;ACH=null;
   if(window._cp)clearInterval(window._cp);
-  sv('vc');
   loadEventPicker();
 }
 
-// ── App init ───────────────────────────────────────────────
+// Init
 async function init(){
   sv('vc');
   var st=localStorage.getItem('ss_s');
   if(st){try{var d=JSON.parse(st);SES={t:d.t,r:d.r};}catch(e){}}
   if(!SES){sv('vl');return;}
-  // Validate session
   var ur=await fetch(S+'/auth/v1/user',{headers:{apikey:AN,Authorization:'Bearer '+SES.t}});
   if(!ur.ok){
-    // Try refresh
     var ok=await refreshSes();
     if(!ok){localStorage.removeItem('ss_s');SES=null;sv('vl');return;}
     ur=await fetch(S+'/auth/v1/user',{headers:{apikey:AN,Authorization:'Bearer '+SES.t}});
@@ -375,7 +345,7 @@ async function init(){
   loadEventPicker();
 }
 
-// ── Attendees ──────────────────────────────────────────────
+// Attendees
 function renderAttendees(filter){
   var el=document.getElementById('al');
   var d=filter?ALL_ATTENDEES.filter(function(a){return (a.first_name||'').toLowerCase().indexOf(filter.toLowerCase())>-1;}):ALL_ATTENDEES;
@@ -385,7 +355,7 @@ function renderAttendees(filter){
   var other=d.filter(function(a){return a.gender!=='Male'&&a.gender!=='Female';}).sort(function(a,b){return (a.first_name||'').localeCompare(b.first_name||'');});
   function renderGroup(group,label){
     if(!group.length)return '';
-    return '<div style="font-size:11px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.05em;padding:10px 0 4px">'+label+'</div>'
+    return '<div style="font-size:11px;font-weight:700;color:#333;text-transform:uppercase;letter-spacing:.05em;padding:10px 0 4px">'+label+'</div>'
       +group.map(function(a){
         var ph=a.image_url||(a.photos&&a.photos[0])||'';
         var init=(a.first_name||'?')[0].toUpperCase();
@@ -467,11 +437,10 @@ async function savePicks(){
     if(rows.length)await fetch(S+'/rest/v1/event_picks',{method:'POST',headers:hd({Prefer:'return=minimal'}),body:JSON.stringify(rows)});
     ae.innerHTML='<div class="al ok">Picks saved!</div>';
     setTimeout(function(){ae.innerHTML='';},3000);
-  }catch(e){ae.innerHTML='<div class="al er">Error. Try again.</div>';}
+  }catch(ex){ae.innerHTML='<div class="al er">Error. Try again.</div>';}
   b.disabled=false;b.textContent='Save my picks';
 }
 
-// ── Matches ────────────────────────────────────────────────
 async function checkMatchesReleased(){
   var r=await api('/rest/v1/rpc/event_matches_released',{method:'POST',body:JSON.stringify({p_event_id:EV})});
   if(r.ok){var d=await r.json();MATCHES_RELEASED=!!d;}
@@ -506,7 +475,6 @@ async function loadMatches(){
   }).join('')+'</div>';
 }
 
-// ── Chat ───────────────────────────────────────────────────
 async function loadChats(){
   if(ACH)return;
   var cl=document.getElementById('ch-list');
@@ -532,8 +500,8 @@ async function loadChats(){
     var pl=m.match_type==='date'?'<span class="pill pd" style="font-size:10px">Date</span>':'<span class="pill pf" style="font-size:10px">Friend</span>';
     return '<div class="row" style="display:flex;align-items:center;gap:12px;cursor:pointer" onclick="openChat(\''+oi+'\',\''+encodeURIComponent(displayName)+'\')">'
       +ph+'<div style="flex:1"><div style="display:flex;align-items:center;gap:6px"><span style="font-size:15px;font-weight:600">'+displayName+'</span>'+pl+'</div>'
-      +'<div style="font-size:13px;color:#999;margin-top:2px">Tap to chat</div></div>'
-      +'<span style="color:#ccc;font-size:18px">&#8250;</span></div>';
+      +'<div style="font-size:13px;color:#333;margin-top:2px">Tap to chat</div></div>'
+      +'<span style="color:#555;font-size:18px">&#8250;</span></div>';
   }).join('')+'</div>';
 }
 
@@ -547,7 +515,7 @@ async function openChat(oid,name){
   document.getElementById('tc').classList.add('on');
   document.getElementById('ch').innerHTML=
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem">'
-    +'<button onclick="closeCh()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#999">&#8592;</button>'
+    +'<button onclick="closeCh()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#333">&#8592;</button>'
     +'<span style="font-size:16px;font-weight:600">'+decodeURIComponent(name)+'</span></div>'
     +'<div id="ml" style="min-height:200px;max-height:320px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column"></div>'
     +'<div class="ci"><input type="text" id="mi" placeholder="Type a message&hellip;" onkeydown="if(event.key===\'Enter\')sendM(\''+oid+'\')"><button class="sb2" onclick="sendM(\''+oid+'\')">&#10148;</button></div>';
@@ -589,7 +557,17 @@ function closeCh(){
   loadChats();
 }
 
-// ── Profile ────────────────────────────────────────────────
+function tab(t){
+  var panels={p:'pp',m:'pm',c:'pcc',pr:'ppr'};
+  var tabs={p:'tp',m:'tm',c:'tc',pr:'tpr'};
+  Object.keys(panels).forEach(function(n){
+    document.getElementById(panels[n]).style.display=n===t?'':'none';
+    document.getElementById(tabs[n]).classList.toggle('on',n===t);
+  });
+  if(t==='m')loadMatches();
+  if(t==='c'){ACH=null;loadChats();}
+}
+
 async function loadMe(){
   var r=await api('/rest/v1/profiles?id=eq.'+UID+'&select=id,first_name,image_url,photos,date_of_birth,gender');
   if(!r.ok)return;
@@ -610,8 +588,8 @@ async function saveProfile(){
   var gender=document.getElementById('pgender').value;
   var msg=document.getElementById('profmsg');
   var r=await fetch(S+'/rest/v1/profiles?id=eq.'+UID,{method:'PATCH',headers:hd({Prefer:'return=minimal'}),body:JSON.stringify({date_of_birth:dob||null,gender:gender||null})});
-  if(r.ok){msg.innerHTML='<span style="color:#2e7d32">Saved!</span>';setTimeout(function(){msg.innerHTML='';},3000);}
-  else{msg.innerHTML='<span style="color:#b71c1c">Error saving.</span>';}
+  if(r.ok){msg.innerHTML='<span style="color:#1b5e20">Saved!</span>';setTimeout(function(){msg.innerHTML='';},3000);}
+  else{msg.innerHTML='<span style="color:#7f0000">Error saving.</span>';}
 }
 
 async function upPhoto(inp){
@@ -621,24 +599,12 @@ async function upPhoto(inp){
   var fn=((PRF&&PRF.first_name)||'user').toLowerCase().replace(/\s+/g,'-');
   var path=fn+'-'+UID.slice(0,8)+'/photo-1.jpeg';
   var r=await fetch(S+'/storage/v1/object/profile-photos/'+path,{method:'POST',headers:{apikey:AN,Authorization:'Bearer '+SES.t,'Content-Type':file.type,'x-upsert':'true'},body:file});
-  if(!r.ok){msg.innerHTML='<span style="color:#b71c1c">Upload failed.</span>';return;}
+  if(!r.ok){msg.innerHTML='<span style="color:#7f0000">Upload failed.</span>';return;}
   var url=S+'/storage/v1/object/public/profile-photos/'+path;
   await fetch(S+'/rest/v1/profiles?id=eq.'+UID,{method:'PATCH',headers:hd({Prefer:'return=minimal'}),body:JSON.stringify({image_url:url})});
   document.getElementById('ppw').innerHTML='<img class="pp" src="'+url+'" alt="">';
-  msg.innerHTML='<span style="color:#2e7d32">Photo saved!</span>';
+  msg.innerHTML='<span style="color:#1b5e20">Photo saved!</span>';
   if(PRF)PRF.image_url=url;
-}
-
-// ── Nav ────────────────────────────────────────────────────
-function tab(t){
-  var panels={p:'pp',m:'pm',c:'pcc',pr:'ppr'};
-  var tabs={p:'tp',m:'tm',c:'tc',pr:'tpr'};
-  Object.keys(panels).forEach(function(n){
-    document.getElementById(panels[n]).style.display=n===t?'':'none';
-    document.getElementById(tabs[n]).classList.toggle('on',n===t);
-  });
-  if(t==='m')loadMatches();
-  if(t==='c'){ACH=null;loadChats();}
 }
 
 function signOut(){
