@@ -483,24 +483,21 @@ async function checkMatchesReleased(){
 async function loadMatches(){
   var mc=document.getElementById('mc');
   mc.innerHTML='<div class="card"><div class="empty" style="padding:2rem 0">&#10084;<br><br>Check back after the event for your matches!</div></div>';
-  var r=await api('/rest/v1/matches?event_id=eq.'+EV+'&or=(user_id.eq.'+UID+',matched_user_id.eq.'+UID+')&status=eq.mutual&select=*');
+  var r=await api('/rest/v1/my_mutual_matches?event_id=eq.'+EV+'&select=other_user_id,match_kind,matched_at');
   if(!r.ok)return;
   var data=await r.json();
   if(!data||!data.length)return;
-  var seen=new Set();
-  var deduped=data.filter(function(m){var oi=m.user_id===UID?m.matched_user_id:m.user_id;if(seen.has(oi))return false;seen.add(oi);return true;});
-  var ids=deduped.map(function(m){return m.user_id===UID?m.matched_user_id:m.user_id;});
+  var ids=data.map(function(m){return m.other_user_id;});
   var pr=await api('/rest/v1/profiles?id=in.('+ids.join(',')+')'+'&select=id,first_name,last_name,image_url');
   var ps=pr.ok?await pr.json():[];
   var bi={};ps.forEach(function(p){bi[p.id]=p;});
-  mc.innerHTML='<div class="card" style="padding:.75rem 1.25rem">'+deduped.map(function(m){
-    var oi=m.user_id===UID?m.matched_user_id:m.user_id;
-    var p=bi[oi]||{};
+  mc.innerHTML='<div class="card" style="padding:.75rem 1.25rem">'+data.map(function(m){
+    var p=bi[m.other_user_id]||{};
     var lastInit=p.last_name?(p.last_name[0].toUpperCase()+'.'):'';
     var displayName=(p.first_name||'Match')+(lastInit?' '+lastInit:'');
-    var pl=m.match_type==='date'?'<span class="pill pd">Date</span>':m.match_type==='friend'?'<span class="pill pf">Friend</span>':'';
+    var pl=m.match_kind==='date'?'<span class="pill pd">Date</span>':m.match_kind==='friend'?'<span class="pill pf">Friend</span>':'';
     return '<div class="mrow"><div style="display:flex;align-items:center;gap:8px">'+pl+'<span style="font-size:15px;font-weight:600">'+displayName+'</span></div>'
-      +'<button class="cbtn" onclick="openChat(\''+oi+'\',\''+encodeURIComponent(displayName)+'\')">&#128172; Chat</button></div>';
+      +'<button class="cbtn" onclick="openChat(\''+m.other_user_id+'\',\''+encodeURIComponent(displayName)+'\')">&#128172; Chat</button></div>';
   }).join('')+'</div>';
 }
 
@@ -510,24 +507,21 @@ async function loadChats(){
   cl.innerHTML='<div class="empty"><span class="sp"></span></div>';
   cl.style.display='';
   document.getElementById('ch').style.display='none';
-  var r=await api('/rest/v1/matches?event_id=eq.'+EV+'&or=(user_id.eq.'+UID+',matched_user_id.eq.'+UID+')&status=eq.mutual&select=*');
+  var r=await api('/rest/v1/my_mutual_matches?event_id=eq.'+EV+'&select=other_user_id,match_kind');
   var data=[];
   if(r.ok)data=await r.json();
   if(!data||!data.length){cl.innerHTML='<div class="empty">No matches yet.</div>';return;}
-  var seen=new Set();
-  var deduped=data.filter(function(m){var oi=m.user_id===UID?m.matched_user_id:m.user_id;if(seen.has(oi))return false;seen.add(oi);return true;});
-  var ids=deduped.map(function(m){return m.user_id===UID?m.matched_user_id:m.user_id;});
+  var ids=data.map(function(m){return m.other_user_id;});
   var pr=await api('/rest/v1/profiles?id=in.('+ids.join(',')+')'+'&select=id,first_name,last_name,image_url');
   var ps=pr.ok?await pr.json():[];
   var bi={};ps.forEach(function(p){bi[p.id]=p;});
-  cl.innerHTML='<div class="card" style="padding:.75rem 1.25rem">'+deduped.map(function(m){
-    var oi=m.user_id===UID?m.matched_user_id:m.user_id;
-    var p=bi[oi]||{};
+  cl.innerHTML='<div class="card" style="padding:.75rem 1.25rem">'+data.map(function(m){
+    var p=bi[m.other_user_id]||{};
     var lastInit=p.last_name?(p.last_name[0].toUpperCase()+'.') :'';
     var displayName=(p.first_name||'Match')+(lastInit?' '+lastInit:'');
     var ph=p.image_url?'<img class="av" src="'+p.image_url+'" alt="">':'<div class="av">'+(p.first_name||'?')[0].toUpperCase()+'</div>';
-    var pl=m.match_type==='date'?'<span class="pill pd" style="font-size:10px">Date</span>':'<span class="pill pf" style="font-size:10px">Friend</span>';
-    return '<div class="row" style="display:flex;align-items:center;gap:12px;cursor:pointer" onclick="openChat(\''+oi+'\',\''+encodeURIComponent(displayName)+'\')">'
+    var pl=m.match_kind==='date'?'<span class="pill pd" style="font-size:10px">Date</span>':'<span class="pill pf" style="font-size:10px">Friend</span>';
+    return '<div class="row" style="display:flex;align-items:center;gap:12px;cursor:pointer" onclick="openChat(\''+m.other_user_id+'\',\''+encodeURIComponent(displayName)+'\')">'
       +ph+'<div style="flex:1"><div style="display:flex;align-items:center;gap:6px"><span style="font-size:15px;font-weight:600">'+displayName+'</span>'+pl+'</div>'
       +'<div style="font-size:13px;color:#333;margin-top:2px">Tap to chat</div></div>'
       +'<span style="color:#555;font-size:18px">&#8250;</span></div>';
