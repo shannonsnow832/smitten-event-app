@@ -176,7 +176,10 @@ tr:last-child td{border-bottom:none}
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <span class="sl">Registered attendees</span>
-        <button class="btn btn-out" style="padding:6px 12px;font-size:13px" onclick="loadAtt()">&#8635; Refresh</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-out" style="padding:6px 12px;font-size:13px" onclick="exportCSV()">&#11015; CSV</button>
+          <button class="btn btn-out" style="padding:6px 12px;font-size:13px" onclick="loadAtt()">&#8635; Refresh</button>
+        </div>
       </div>
       <div id="at"><div style="text-align:center;padding:1rem"><span class="sp"></span></div></div>
     </div>
@@ -252,6 +255,20 @@ var AN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF
 var PASS='smitten2026';
 var ORG_ID='fc511c38-937d-4a1a-bfe2-28ce4c7c7744';
 var SES=null,UID=null,ROLE=null,EV=null,OTP_EMAIL='',ALL_PICKS_DATA=[];
+var ORG={brand_name:'Smitten Singles',brand_primary_color:'#C6302C',website_url:'https://smittensingles.com',admin_secret:'smitten2026'};
+
+async function loadOrgConfig(){
+  try{
+    var r=await fetch(S+'/rest/v1/rpc/get_org_config',{method:'POST',headers:{'Content-Type':'application/json',apikey:AN},body:JSON.stringify({p_domain:window.location.hostname})});
+    if(r.ok){var d=await r.json();if(d&&d.brand_name){ORG=d;if(d.admin_secret)PASS=d.admin_secret;if(d.id)ORG_ID=d.id;}}
+  }catch(e){}
+  var color=ORG.brand_primary_color||'#C6302C';
+  document.title=(ORG.brand_name||'Smitten Singles')+' Admin';
+  document.querySelectorAll('h1').forEach(function(el){if(el.textContent==='Smitten Singles'||el.textContent.indexOf('Admin')>-1){}});
+  var st=document.createElement('style');
+  st.textContent='.btn:not(.btn-out):not(.btn-g):not(.btn-gray){background:'+color+'} .btn:not(.btn-out):not(.btn-g):not(.btn-gray):hover{background:'+color+'dd} h1{color:'+color+'} .nt.on{background:'+color+';border-color:'+color+'} input:focus,select:focus{border-color:'+color+'} .sp{border-top-color:'+color+'}';
+  document.head.appendChild(st);
+}
 
 function sv(v){['vl','votp','vd','vep','vh','va'].forEach(function(n){document.getElementById(n).style.display=n===v?'':'none';});}
 function saveSes(){localStorage.setItem('ss_admin_s',JSON.stringify({t:SES.t,r:SES.r}));}
@@ -364,6 +381,7 @@ async function refreshSes(){
 }
 
 async function init(){
+  await loadOrgConfig();
   var st=localStorage.getItem('ss_admin_s');
   if(!st){sv('vl');return;}
   try{var d=JSON.parse(st);SES={t:d.t,r:d.r};}catch(e){sv('vl');return;}
@@ -381,14 +399,20 @@ async function init(){
 // Event picker
 async function loadEvents(){
   sv('vep');
-  // Show manage hosts link for super_admin only
   document.getElementById('manage-hosts-link').style.display=ROLE==='super_admin'?'':'none';
   if(ROLE==='super_admin')loadHosts();
   var sel=document.getElementById('ev-sel');
   sel.innerHTML='<option value="">Loading...</option>';
-  var r=await fetch(S+'/rest/v1/events?select=id,name,event_date,start_time,city,state&order=event_date.desc',{headers:hdrs()});
-  var events=r.ok?await r.json():[];
-  if(!events.length){sel.innerHTML='<option value="">No events found</option>';return;}
+  var events=[];
+  if(ROLE==='super_admin'){
+    var r=await fetch(S+'/rest/v1/events?select=id,name,event_date,start_time,city,state&order=event_date.desc',{headers:hdrs()});
+    if(r.ok)events=await r.json();
+  } else {
+    // Host: only see assigned events
+    var r=await fetch(S+'/rest/v1/rpc/get_host_events',{method:'POST',headers:hdrs(),body:JSON.stringify({p_user_id:UID})});
+    if(r.ok)events=await r.json();
+  }
+  if(!events.length){sel.innerHTML='<option value="">No events assigned to you</option>';return;}
   sel.innerHTML='<option value="">-- Select an event --</option>'
     +events.map(function(ev){
       var dt=ev.event_date?new Date(ev.event_date+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}):'';
@@ -412,6 +436,32 @@ function enterEvent(){
 
 function switchEvent(){EV=null;document.getElementById('epm').innerHTML='';loadEvents();}
 
+function exportCSV(){
+  var rows=[['First Name','Last Name','Email','Gender','Status','Checked In At']];
+  var trs=document.querySelectorAll('#at tbody tr');
+  trs.forEach(function(tr){
+    var tds=tr.querySelectorAll('td');
+    if(!tds.length)return;
+    var name=tds[0]?tds[0].textContent.trim():'';
+    var email=tds[1]?tds[1].textContent.trim():'';
+    var status=tds[3]?tds[3].textContent.trim():'';
+    rows.push([name,'',email,'',status,'']);
+  });
+  // Better: use stored data
+  if(window._attData&&window._attData.length){
+    rows=[['First Name','Last Name','Email','Gender','Status','Checked In At']];
+    window._attData.forEach(function(r){
+      rows.push([r.first_name||'',r.last_name||'',r.email||'',r.gender||'',r.checked_in_at?'Checked in':'Registered',r.checked_in_at||'']);
+    });
+  }
+  var csv=rows.map(function(r){return r.map(function(c){return '"'+(c+'').replace(/"/g,'""')+'"';}).join(',');}).join('
+');
+  var a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='attendees-'+EV+'.csv';
+  a.click();
+}
+
 function signOut(){
   localStorage.removeItem('ss_admin_s');
   SES=null;UID=null;ROLE=null;EV=null;
@@ -424,19 +474,63 @@ async function loadHosts(){
   el.innerHTML='<span class="sp"></span>';
   var r=await fetch(S+'/rest/v1/rpc/admin_get_staff',{method:'POST',headers:hdrs(),body:JSON.stringify({})});
   var staff=r.ok?await r.json():[];
+  var er=await fetch(S+'/rest/v1/events?select=id,name,event_date&order=event_date.desc',{headers:hdrs()});
+  var allEvents=er.ok?await er.json():[];
   if(!staff.length){el.innerHTML='<p style="color:#555;padding:8px 0">No staff found.</p>';return;}
-  el.innerHTML='<table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th></th></tr></thead><tbody>'
-    +staff.map(function(s){
-      var name=((s.first_name||'')+(s.last_name?' '+s.last_name:'')).trim()||'Unknown';
-      var roleLabel=s.role==='super_admin'?'<span class="badge" style="background:#fce4ec;color:#880e4f">Super Admin</span>':'<span class="badge bi">Host</span>';
-      var isSelf=s.email&&s.email.toLowerCase()===OTP_EMAIL.toLowerCase();
-      return '<tr><td style="font-weight:500">'+name+(isSelf?' <span style="font-size:11px;color:#888">(you)</span>':'')+'</td>'
-        +'<td style="color:#555;font-size:13px">'+(s.email||'')+'</td>'
-        +'<td>'+roleLabel+'</td>'
-        +'<td>'+(isSelf?'':'<button class="btn btn-out" style="font-size:12px;padding:4px 10px;border-color:#b71c1c;color:#b71c1c" onclick="deactivateHost(\''+s.id+'\',\''+(s.first_name||'this person')+'\',this)">Remove</button>')+'</td>'
-        +'</tr>';
-    }).join('')+'</tbody></table>';
+  var rows='';
+  for(var i=0;i<staff.length;i++){
+    var s=staff[i];
+    var name=((s.first_name||'')+(s.last_name?' '+s.last_name:'')).trim()||'Unknown';
+    var roleLabel=s.role==='super_admin'?'<span class="badge" style="background:#fce4ec;color:#880e4f">Super Admin</span>':'<span class="badge bi">Host</span>';
+    var isSelf=s.email&&s.email.toLowerCase()===OTP_EMAIL.toLowerCase();
+    var hostEvents=[];
+    if(s.user_id){
+      var her=await fetch(S+'/rest/v1/rpc/get_host_events',{method:'POST',headers:hdrs(),body:JSON.stringify({p_user_id:s.user_id})});
+      if(her.ok)hostEvents=await her.json();
+    }
+    var evOpts=allEvents.map(function(ev){
+      var dt=ev.event_date?new Date(ev.event_date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
+      return '<option value="'+ev.id+'">'+(ev.name||'Event')+(dt?' - '+dt:'')+'</option>';
+    }).join('');
+    var assignedList=hostEvents.length?hostEvents.map(function(ev){
+      return '<span style="display:inline-flex;align-items:center;gap:4px;background:#f0f0f0;border-radius:6px;padding:3px 8px;font-size:12px;margin:2px">'
+        +(ev.name||'Event')
+        +(s.user_id?'<button onclick="removeHostEvent(\''+s.user_id+'\',\''+ev.id+'\',this)" style="background:none;border:none;color:#b71c1c;cursor:pointer;font-size:14px;padding:0;line-height:1">&times;</button>':'')
+        +'</span>';
+    }).join(''):'<span style="color:#aaa;font-size:12px">No events assigned</span>';
+    rows+='<tr style="vertical-align:top">'
+      +'<td style="font-weight:500;padding-top:14px">'+name+(isSelf?' <span style="font-size:11px;color:#888">(you)</span>':'')+'</td>'
+      +'<td style="color:#555;font-size:13px;padding-top:14px">'+(s.email||'')+'</td>'
+      +'<td style="padding-top:14px">'+roleLabel+'</td>'
+      +'<td><div style="margin-bottom:6px">'+assignedList+'</div>'
+        +(s.user_id&&evOpts?'<div style="display:flex;gap:6px"><select id="evsel-'+i+'" style="margin:0;padding:6px 8px;font-size:12px;flex:1">'+evOpts+'</select>'
+          +'<button class="btn" style="padding:5px 10px;font-size:12px" onclick="assignHostEvent(\''+s.user_id+'\',\'evsel-'+i+'\',this)">Assign</button></div>':'')
+      +'</td>'
+      +'<td style="padding-top:14px">'+(isSelf?'':'<button class="btn btn-out" style="font-size:12px;padding:4px 10px;border-color:#b71c1c;color:#b71c1c" onclick="deactivateHost(\''+s.id+'\',\''+(s.first_name||'this person')+'\',this)">Remove</button>')+'</td>'
+      +'</tr>';
+  }
+  el.innerHTML='<table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Assigned Events</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>';
 }
+
+async function assignHostEvent(userId,selId,btn){
+  var evId=document.getElementById(selId).value;
+  if(!evId)return;
+  btn.disabled=true;btn.textContent='...';
+  var r=await fetch(S+'/rest/v1/rpc/admin_assign_host_to_event',{method:'POST',headers:hdrs(),body:JSON.stringify({p_host_user_id:userId,p_event_id:evId})});
+  var d=r.ok?await r.json():{};
+  btn.disabled=false;btn.textContent='Assign';
+  if(d.ok)loadHosts();
+  else alert(d.error||'Failed. Try again.');
+}
+
+async function removeHostEvent(userId,evId,btn){
+  btn.disabled=true;
+  var r=await fetch(S+'/rest/v1/rpc/admin_remove_host_from_event',{method:'POST',headers:hdrs(),body:JSON.stringify({p_host_user_id:userId,p_event_id:evId})});
+  var d=r.ok?await r.json():{};
+  if(d.ok)loadHosts();
+  else{btn.disabled=false;alert(d.error||'Failed.');}
+}
+
 
 async function addHost(){
   var fn=document.getElementById('hfn').value.trim();
@@ -485,6 +579,7 @@ async function loadAtt(){
   el.innerHTML='<div style="text-align:center;padding:1rem"><span class="sp"></span></div>';
   var d=await rpc('admin_get_registrations',{p_event_id:EV,p_admin_secret:PASS});
   if(!d||!d.length){el.innerHTML='<p style="color:#555;text-align:center;padding:1.5rem">No registrations yet.</p>';return;}
+  window._attData=d;
   var men=d.filter(function(r){return r.gender==='Male';}).length;
   var women=d.filter(function(r){return r.gender==='Female';}).length;
   var checkedIn=d.filter(function(r){return !!r.checked_in_at;}).length;

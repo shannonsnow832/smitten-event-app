@@ -169,6 +169,23 @@ input:focus,select:focus{border-color:#C6302C}
 var S='https://qgctltxcgsnbrdtbhmay.supabase.co';
 var AN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnY3RsdHhjZ3NuYnJkdGJobWF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMjgwNTcsImV4cCI6MjA5MDYwNDA1N30.-TS1CofnGMGAj38OrZAvtphbHPXQWZWtysO83_960M4';
 var SES=null,UID=null,PRF=null,EV=null,PX={},ACH=null,MATCHES_RELEASED=false,ALL_ATTENDEES=[],OTP_EMAIL='';
+var ORG={brand_name:'Smitten Singles',brand_primary_color:'#C6302C',website_url:'https://smittensingles.com',admin_secret:'smitten2026'};
+
+async function loadOrgConfig(){
+  try{
+    var r=await fetch(S+'/rest/v1/rpc/get_org_config',{method:'POST',headers:{'Content-Type':'application/json',apikey:AN},body:JSON.stringify({p_domain:window.location.hostname})});
+    if(r.ok){var d=await r.json();if(d&&d.brand_name)ORG=d;}
+  }catch(e){}
+  // Apply branding
+  document.title=ORG.brand_name;
+  document.querySelector('h1').textContent=ORG.brand_name;
+  var color=ORG.brand_primary_color||'#C6302C';
+  document.documentElement.style.setProperty('--brand',color);
+  // Apply color to all hardcoded red elements via style tag
+  var st=document.createElement('style');
+  st.textContent='.btn{background:'+color+'} .btn:hover{background:'+color+'dd} .logo h1{color:'+color+'} .nav .nt.on{color:'+color+';border-bottom-color:'+color+'} .opt.sd{background:'+color+';border-color:'+color+'} .cbtn{border-color:'+color+';color:'+color+'} .cbtn:hover{background:'+color+'} .otp-wrap input:focus{border-color:'+color+'} input:focus,select:focus{border-color:'+color+'} .sp{border-top-color:'+color+'} .tlink{color:'+color+'} .ev-card:hover{border-color:'+color+'} .sb2{background:'+color+'} .upbtn{border-color:'+color+';color:'+color+'} .bm{background:'+color+'} .pd{color:'+color+'}';
+  document.head.appendChild(st);
+}
 
 function hd(x){return Object.assign({'Content-Type':'application/json',apikey:AN,Authorization:'Bearer '+(SES&&SES.t||AN)},x||{});}
 function api(p,o){return fetch(S+p,Object.assign({headers:hd()},o||{}));}
@@ -273,20 +290,31 @@ async function refreshSes(){
 // Event picker
 async function loadEventPicker(){
   sv('vc');
-  var r=await api('/rest/v1/registrations?profile_id=eq.'+UID+'&select=event_id,events(id,name,event_date,start_time,city,state,status)');
-  if(!r.ok){sv('vl');return;}
-  var rows=await r.json();
-  var seen={},events=[];
-  rows.forEach(function(row){
-    var ev=row.events;
-    if(!ev||seen[ev.id])return;
-    seen[ev.id]=true;
-    events.push(ev);
-  });
+  var events=[];
+  // Check if user is a host/admin — if so, load their assigned events
+  var sr=await fetch(S+'/rest/v1/staff?user_id=eq.'+UID+'&is_active=eq.true&select=role&limit=1',{headers:hd()});
+  var staffRows=sr.ok?await sr.json():[];
+  if(staffRows&&staffRows.length){
+    // Staff member — load assigned events via event_hosts
+    var hr=await api('/rest/v1/rpc/get_host_events',{method:'POST',body:JSON.stringify({p_user_id:UID})});
+    if(hr.ok)events=await hr.json();
+  } else {
+    // Regular participant — load via registrations
+    var r=await api('/rest/v1/registrations?profile_id=eq.'+UID+'&select=event_id,events(id,name,event_date,start_time,city,state,status)');
+    if(!r.ok){sv('vl');return;}
+    var rows=await r.json();
+    var seen={};
+    rows.forEach(function(row){
+      var ev=row.events;
+      if(!ev||seen[ev.id])return;
+      seen[ev.id]=true;
+      events.push(ev);
+    });
+  }
   events.sort(function(a,b){return (a.event_date||'').localeCompare(b.event_date||'');});
   var el=document.getElementById('ev-list');
   if(!events.length){
-    el.innerHTML='<div class="card"><div class="empty">No upcoming events found for your account.<br><br><a href="https://smittensingles.com" style="color:#C6302C;font-weight:600">View upcoming events at smittensingles.com</a></div></div>';
+    el.innerHTML='<div class="card"><div class="empty">No upcoming events found for your account.<br><br><a href="'+(ORG.website_url||'#')+'" style="color:'+(ORG.brand_primary_color||'#C6302C')+';font-weight:600">View upcoming events at '+(ORG.brand_name||'our website')+'</a></div></div>';
     sv('ve');
     return;
   }
@@ -331,6 +359,7 @@ function goPickEvent(){
 // Init
 async function init(){
   sv('vc');
+  await loadOrgConfig();
   var st=localStorage.getItem('ss_s');
   if(st){try{var d=JSON.parse(st);SES={t:d.t,r:d.r};}catch(e){}}
   if(!SES){sv('vl');return;}
