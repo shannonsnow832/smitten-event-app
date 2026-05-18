@@ -531,7 +531,7 @@ async function addHostToEvent(){
   loadEventHosts();
 }
 
-
+async function deactivateHost(btn){
   var id=btn.dataset.sid;var name=btn.dataset.name;
   if(!confirm('Remove '+name+' from admin access?'))return;
   btn.disabled=true;btn.textContent='...';
