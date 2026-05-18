@@ -144,6 +144,7 @@ tr:last-child td{border-bottom:none}
     <button class="nt" id="np" onclick="sec('p')">Add participant</button>
     <button class="nt" id="nm" onclick="sec('m')">Release matches</button>
     <button class="nt" id="nr" onclick="sec('r')">Match results</button>
+    <button class="nt" id="nh" onclick="sec('h')" style="display:none">Hosts</button>
   </div>
   <div id="sa">
     <div class="card">
@@ -186,6 +187,24 @@ tr:last-child td{border-bottom:none}
       <p class="sl">Who has submitted picks</p>
       <button class="btn btn-out" style="padding:6px 12px;font-size:13px;margin-bottom:12px" onclick="loadPS()">&#8635; Refresh</button>
       <div id="ws"><span class="sp"></span></div>
+    </div>
+  </div>
+  <div id="sh" style="display:none">
+    <div class="card">
+      <p class="sl">Add host to this event</p>
+      <p style="font-size:14px;color:#555;margin-bottom:12px">Enter their email. If they're already a host, they'll be assigned. If new, they'll be created and assigned.</p>
+      <input type="text" id="ehfn" placeholder="First name">
+      <input type="text" id="ehln" placeholder="Last name (optional)">
+      <input type="email" id="ehe" placeholder="Email">
+      <button class="btn" onclick="addHostToEvent()">Add host</button>
+      <div id="ehm" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <p class="sl" style="margin:0">Hosts assigned to this event</p>
+        <button class="btn btn-out" style="padding:6px 12px;font-size:13px" onclick="loadEventHosts()">&#8635; Refresh</button>
+      </div>
+      <div id="ehl"><span class="sp"></span></div>
     </div>
   </div>
   <div id="sr" style="display:none">
@@ -374,6 +393,7 @@ function enterEvent(){
   var label=sel.options[sel.selectedIndex]&&sel.options[sel.selectedIndex].text;
   if(!id){document.getElementById('epm').innerHTML='<div class="al er">Please select an event.</div>';return;}
   EV=id;document.getElementById('ev-sub').textContent=label;
+  if(ROLE==='super_admin')document.getElementById('nh').style.display='';
   sv('va');sec('a');loadAtt();
 }
 function switchEvent(){EV=null;document.getElementById('epm').innerHTML='';loadEvents();}
@@ -469,7 +489,49 @@ async function addHost(){
   loadHosts();
 }
 
-async function deactivateHost(btn){
+async function loadEventHosts(){
+  var el=document.getElementById('ehl');
+  el.innerHTML='<span class="sp"></span>';
+  var r=await fetch(S+'/rest/v1/rpc/get_event_hosts',{method:'POST',headers:hdrs(),body:JSON.stringify({p_event_id:EV})});
+  var hosts=r.ok?await r.json():[];
+  if(!hosts||!hosts.length){el.innerHTML='<p style="color:#aaa;font-size:13px;padding:8px 0">No hosts assigned to this event yet.</p>';return;}
+  el.innerHTML='<table><thead><tr><th>Name</th><th>Email</th><th></th></tr></thead><tbody>'
+    +hosts.map(function(h){
+      var name=((h.first_name||'')+(h.last_name?' '+h.last_name:'')).trim()||'Unknown';
+      return '<tr>'
+        +'<td style="font-weight:500">'+name+'</td>'
+        +'<td style="color:#555;font-size:13px">'+(h.email||'')+'</td>'
+        +'<td><button class="btn btn-out" style="font-size:12px;padding:4px 10px;border-color:#b71c1c;color:#b71c1c" data-uid="'+h.user_id+'" data-eid="'+EV+'" onclick="removeHostEvent(this)">Remove</button></td>'
+        +'</tr>';
+    }).join('')+'</tbody></table>';
+}
+
+async function addHostToEvent(){
+  var fn=document.getElementById('ehfn').value.trim();
+  var ln=document.getElementById('ehln').value.trim();
+  var email=document.getElementById('ehe').value.trim().toLowerCase();
+  var msg=document.getElementById('ehm');
+  if(!fn||!email){msg.innerHTML='<div class="al er">First name and email required.</div>';return;}
+  msg.innerHTML='<div class="al inf"><span class="sp"></span> Adding&hellip;</div>';
+  // Create/find staff record
+  var d=await rpc('admin_add_staff',{p_first_name:fn,p_last_name:ln||'',p_email:email,p_role:'host',p_org_id:ORG_ID});
+  if(!d||(!d.ok&&d.error!=='already_exists')){
+    msg.innerHTML='<div class="al er">'+(d&&d.error?d.error:'Something went wrong.')+'</div>';return;
+  }
+  // Look up user_id by email to assign to event
+  var sr=await fetch(S+'/rest/v1/staff?email=eq.'+encodeURIComponent(email)+'&is_active=eq.true&select=user_id&limit=1',{headers:hdrs()});
+  var sarr=sr.ok?await sr.json():[];
+  if(!sarr||!sarr.length){msg.innerHTML='<div class="al er">Host created but could not look up for event assignment. Refresh and try again.</div>';return;}
+  var uid=sarr[0].user_id;
+  if(!uid){msg.innerHTML='<div class="al er">Host added but has no auth account yet. They must sign in once before they can be assigned.</div>';return;}
+  var a=await rpc('admin_assign_host_to_event',{p_host_user_id:uid,p_event_id:EV});
+  if(!a||!a.ok){msg.innerHTML='<div class="al er">'+(a&&a.error?a.error:'Failed to assign to event.')+'</div>';return;}
+  msg.innerHTML='<div class="al ok">'+fn+' added and assigned to this event.</div>';
+  document.getElementById('ehfn').value='';document.getElementById('ehln').value='';document.getElementById('ehe').value='';
+  loadEventHosts();
+}
+
+
   var id=btn.dataset.sid;var name=btn.dataset.name;
   if(!confirm('Remove '+name+' from admin access?'))return;
   btn.disabled=true;btn.textContent='...';
@@ -479,12 +541,13 @@ async function deactivateHost(btn){
 
 // Admin sections
 function sec(s){
-  ['a','p','m','r'].forEach(function(n){
+  ['a','p','m','r','h'].forEach(function(n){
     document.getElementById('s'+n).style.display=n===s?'':'none';
     document.getElementById('n'+n).classList.toggle('on',n===s);
   });
   if(s==='m')loadPS();
   if(s==='r')loadResults();
+  if(s==='h')loadEventHosts();
 }
 
 async function loadAtt(){
