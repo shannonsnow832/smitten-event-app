@@ -615,7 +615,7 @@ async function addP(){
   if(!email){msg.innerHTML='<div class="al er">Enter an email.</div>';return;}
   cc.style.display='none';
   msg.innerHTML='<div class="al inf"><span class="sp"></span> Looking up&hellip;</div>';
-  var d=await rpc('admin_lookup_and_register',{p_email:email,p_event_id:EV,p_admin_secret:PASS});
+  var d=await rpc('admin_lookup_and_register',{p_event_id:EV,p_email:email,p_admin_secret:PASS});
   if(!d||!d.ok){
     if(d&&d.error&&d.error.indexOf('No profile')>-1){
       msg.innerHTML='<div class="al inf">No profile found. Fill in details below.</div>';
