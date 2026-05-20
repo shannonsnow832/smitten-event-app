@@ -372,7 +372,8 @@ async function loadEvents(){
   sel.innerHTML='<option value="">Loading...</option>';
   var events=[];
   if(ROLE==='super_admin'){
-    var r=await fetch(S+'/rest/v1/events?select=id,name,event_date,start_time,city,state&order=event_date.desc',{headers:hdrs()});
+    var today=new Date().toISOString().slice(0,10);
+    var r=await fetch(S+'/rest/v1/events?select=id,name,event_date,start_time,city,state&event_date=gte.'+today+'&order=event_date.asc',{headers:hdrs()});
     if(r.ok)events=await r.json();
   } else {
     var r=await fetch(S+'/rest/v1/rpc/get_host_events',{method:'POST',headers:hdrs(),body:JSON.stringify({p_user_id:UID})});
@@ -513,12 +514,10 @@ async function addHostToEvent(){
   var msg=document.getElementById('ehm');
   if(!fn||!email){msg.innerHTML='<div class="al er">First name and email required.</div>';return;}
   msg.innerHTML='<div class="al inf"><span class="sp"></span> Adding&hellip;</div>';
-  // Create/find staff record
   var d=await rpc('admin_add_staff',{p_first_name:fn,p_last_name:ln||'',p_email:email,p_role:'host',p_org_id:ORG_ID});
   if(!d||(!d.ok&&d.error!=='already_exists')){
     msg.innerHTML='<div class="al er">'+(d&&d.error?d.error:'Something went wrong.')+'</div>';return;
   }
-  // Look up user_id by email to assign to event
   var sr=await fetch(S+'/rest/v1/staff?email=eq.'+encodeURIComponent(email)+'&is_active=eq.true&select=user_id&limit=1',{headers:hdrs()});
   var sarr=sr.ok?await sr.json():[];
   if(!sarr||!sarr.length){msg.innerHTML='<div class="al er">Host created but could not look up for event assignment. Refresh and try again.</div>';return;}
@@ -588,7 +587,7 @@ async function loadAtt(){
 }
 
 async function doCI(btn){btn.disabled=true;btn.textContent='...';var d=await rpc('admin_checkin',{p_registration_id:btn.dataset.rid,p_admin_secret:PASS});if(d&&d.ok)loadAtt();else{btn.disabled=false;btn.textContent='Check in';alert('Failed.');}}
-async function doCO(btn){btn.disabled=true;btn.textContent='...';var d=await rpc('admin_checkout',{p_registration_id:btn.dataset.rid,p_admin_secret:PASS});if(d&&d.ok)loadAtt();else{btn.disabled=false;btn.textContent='Check out';alert('Failed.');}}
+async function doCO(btn){btn.disabled=true;btn.textContent='...';var d=await rpc('admin_checkin',{p_registration_id:btn.dataset.rid,p_admin_secret:PASS});if(d&&d.ok)loadAtt();else{btn.disabled=false;btn.textContent='Check out';alert('Failed.');}}
 function loginAs(btn){window.open('https://event-app.smittensingles.com/pick.html?email='+encodeURIComponent(btn.dataset.email),'_blank');}
 async function removeP(btn){
   if(!confirm('Remove '+btn.dataset.name+' from the event?'))return;
@@ -638,7 +637,7 @@ async function createP(){
   var msg=document.getElementById('cm');
   if(!fn){msg.innerHTML='<div class="al er">Enter first name.</div>';return;}
   msg.innerHTML='<div class="al inf"><span class="sp"></span> Creating&hellip;</div>';
-  var d=await rpc('admin_create_and_register',{p_first_name:fn,p_last_name:ln,p_email:email,p_event_id:EV,p_admin_secret:PASS});
+  var d=await rpc('admin_create_and_register',{p_event_id:EV,p_email:email,p_first_name:fn,p_last_name:ln,p_admin_secret:PASS});
   if(!d||!d.ok){msg.innerHTML='<div class="al er">'+(d&&d.error?d.error:'Something went wrong.')+'</div>';}
   else if(d.already_registered){msg.innerHTML='<div class="al inf">'+fn+' is already registered.</div>';}
   else{msg.innerHTML='<div class="al ok">'+fn+' created and registered!</div>';document.getElementById('ae').value='';document.getElementById('create-card').style.display='none';document.getElementById('am').innerHTML='';loadAtt();}
