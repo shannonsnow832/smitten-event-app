@@ -1692,58 +1692,76 @@ function renderPhotoGrid() {
   const grid = document.getElementById('photo-grid');
   if (!grid) return;
   grid.innerHTML = '';
-  allProfilePhotos.forEach((url, i) => {
+
+  // Always render all MAX_PHOTOS slots so grid is always full
+  for (let i = 0; i < MAX_PHOTOS; i++) {
+    const url = allProfilePhotos[i] || null;
     const slot = document.createElement('div');
-    slot.className = 'photo-slot has-photo' + (i === 0 ? ' is-main' : '');
-    slot.draggable = true;
-    slot.dataset.index = i;
+    const slotIndex = i; // capture for closures
 
-    const img = document.createElement('img');
-    img.src = url;
-    img.onclick = (e) => { e.stopPropagation(); lbOpen(allProfilePhotos, i); };
-    slot.appendChild(img);
+    if (url) {
+      // Filled slot
+      slot.className = 'photo-slot has-photo' + (slotIndex === 0 ? ' is-main' : '');
+      slot.draggable = true;
+      slot.dataset.index = slotIndex;
 
-    if (i === 0) {
-      const badge = document.createElement('div');
-      badge.className = 'main-badge';
-      badge.textContent = 'MAIN';
-      slot.appendChild(badge);
+      const img = document.createElement('img');
+      img.src = url;
+      slot.appendChild(img);
+
+      if (slotIndex === 0) {
+        const badge = document.createElement('div');
+        badge.className = 'main-badge';
+        badge.textContent = 'MAIN';
+        slot.appendChild(badge);
+      }
+
+      const del = document.createElement('button');
+      del.className = 'photo-delete-btn';
+      del.innerHTML = '×';
+      slot.appendChild(del);
+
+      // Click img → lightbox; click delete → delete; click slot background → replace
+      img.addEventListener('click', (e) => { e.stopPropagation(); lbOpen(allProfilePhotos.filter(Boolean), slotIndex); });
+      del.addEventListener('click', (e) => { e.stopPropagation(); confirmDeletePhoto(slotIndex); });
+      slot.addEventListener('click', (e) => {
+        if (e.target === img || e.target === del || e.target.classList.contains('main-badge')) return;
+        _photoUploadTargetSlot = slotIndex;
+        document.getElementById('photo-file-input').click();
+      });
+
+      // Drag events
+      slot.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', String(slotIndex));
+        e.dataTransfer.effectAllowed = 'move';
+        setTimeout(() => slot.classList.add('dragging'), 0);
+      });
+      slot.addEventListener('dragend', () => slot.classList.remove('dragging'));
+
+    } else {
+      // Empty slot
+      slot.className = 'photo-slot';
+      slot.innerHTML = '<span class="cam">+</span>';
+      slot.addEventListener('click', () => {
+        _photoUploadTargetSlot = slotIndex;
+        document.getElementById('photo-file-input').click();
+      });
     }
 
-    const del = document.createElement('button');
-    del.className = 'photo-delete-btn';
-    del.innerHTML = '×';
-    del.onclick = (e) => { e.stopPropagation(); confirmDeletePhoto(i); };
-    slot.appendChild(del);
-
-    slot.onclick = (e) => {
-      if (e.target === del || e.target === img) return;
-      _photoUploadTargetSlot = i;
-      document.getElementById('photo-file-input').click();
-    };
-
-    // Drag
-    slot.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', i); slot.classList.add('dragging'); });
-    slot.addEventListener('dragend', () => slot.classList.remove('dragging'));
-    slot.addEventListener('dragover', (e) => { e.preventDefault(); slot.classList.add('drag-over'); });
+    // Drop target on every slot
+    slot.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; slot.classList.add('drag-over'); });
     slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
     slot.addEventListener('drop', (e) => {
-      e.preventDefault(); slot.classList.remove('drag-over');
-      const from = parseInt(e.dataTransfer.getData('text/plain'));
-      if (from === i) return;
-      reorderPhotos(from, i);
+      e.preventDefault();
+      slot.classList.remove('drag-over');
+      const fromIdx = parseInt(e.dataTransfer.getData('text/plain'));
+      const toIdx = slotIndex;
+      if (isNaN(fromIdx) || fromIdx === toIdx) return;
+      if (toIdx >= allProfilePhotos.length) return; // can't drop onto empty
+      reorderPhotos(fromIdx, toIdx);
     });
 
     grid.appendChild(slot);
-  });
-
-  // Empty slot if under max
-  if (allProfilePhotos.length < MAX_PHOTOS) {
-    const empty = document.createElement('div');
-    empty.className = 'photo-slot';
-    empty.innerHTML = '<span class="cam">+</span>';
-    empty.onclick = () => { _photoUploadTargetSlot = allProfilePhotos.length; document.getElementById('photo-file-input').click(); };
-    grid.appendChild(empty);
   }
 }
 
