@@ -8,23 +8,30 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+  /* Aligned to the Smitten Singles Admin Design System, approved
+     2026-08-24: pale blush page, white work surfaces, red as an accent,
+     borders instead of shadows, 8px surfaces and 6px controls. Brand
+     colours themselves are unchanged. */
   :root {
     --red: #C6302C;
     --red-light: #DA5C58;
     --pink: #FBB3B1;
+    --blush: #FDF7F6;
+    --border: #EBE7E6;
     --gray-light: #EFEFF1;
     --gray-dark: #5A5353;
     --gray-mid: #BFBFBF;
     --white: #FFFFFF;
     --black: #000000;
-    --radius: 12px;
-    --radius-sm: 8px;
-    --shadow: 0 2px 12px rgba(90,83,83,0.10);
+    --radius: 8px;
+    --radius-sm: 6px;
+    --shadow: none;
   }
+  h1, h2, h3, h4 { text-transform: uppercase; letter-spacing: -0.01em; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Montserrat', sans-serif;
-    background: var(--gray-light);
+    background: var(--blush);
     color: var(--gray-dark);
     min-height: 100vh;
   }
@@ -62,6 +69,7 @@
     background: var(--white);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
+    border: 1px solid var(--border);
     padding: 48px 40px;
   }
   .gate-wrap h1 {
@@ -84,6 +92,7 @@
     background: var(--white);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
+    border: 1px solid var(--border);
     padding: 48px 40px;
     text-align: center;
   }
@@ -147,6 +156,7 @@
     background: var(--white);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
+    border: 1px solid var(--border);
     padding: 24px;
   }
 
@@ -232,41 +242,36 @@
   /* TABS */
   .tabs {
     display: flex;
-    background: var(--white);
-    border-radius: var(--radius) var(--radius) 0 0;
-    border-bottom: 2px solid var(--gray-light);
-    overflow: hidden;
+    gap: 26px;
+    background: transparent;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
   }
   .tab-btn {
-    flex: 1;
-    padding: 16px 8px;
+    padding: 14px 0;
     border: none;
-    background: var(--gray-light);
+    background: none;
     font-family: 'Montserrat', sans-serif;
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: var(--gray-dark);
     cursor: pointer;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -2px;
-    transition: all 0.2s;
-    border-right: 1px solid #e0e0e0;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.2s, border-color 0.2s;
   }
-  .tab-btn:last-child { border-right: none; }
   .tab-btn.active {
     color: var(--red);
     border-bottom-color: var(--red);
-    background: var(--white);
   }
-  .tab-btn:hover:not(.active) {
-    background: #e8e8e8;
-    color: var(--gray-dark);
-  }
+  .tab-btn:hover:not(.active) { color: var(--black); }
 
   .tab-content {
     background: var(--white);
-    border-radius: 0 0 var(--radius) var(--radius);
+    border-radius: var(--radius);
+    margin-top: 16px;
     box-shadow: var(--shadow);
+    border: 1px solid var(--border);
     padding: 28px;
     display: none;
   }
@@ -277,8 +282,10 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
     color: var(--black);
     margin-bottom: 20px;
     margin-top: 8px;
@@ -383,15 +390,15 @@
   .btn-primary:hover { background: var(--red-light); }
   .btn-primary:disabled { background: var(--gray-mid); cursor: not-allowed; }
   .btn-outline {
-    background: transparent;
-    color: var(--red);
-    border: 1.5px solid var(--red);
+    background: var(--white);
+    color: var(--black);
+    border: 1px solid var(--gray-mid);
   }
-  .btn-outline:hover { background: #FFF5F5; }
+  .btn-outline:hover { background: var(--gray-light); }
   .btn-ghost {
     background: transparent;
     color: var(--gray-dark);
-    border: 1.5px solid var(--gray-mid);
+    border: 1px solid var(--border);
   }
 
   /* FORM ROW - full width fields */
@@ -462,6 +469,7 @@
     background: var(--white);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
+    border: 1px solid var(--border);
     padding: 48px 40px;
   }
   .success-wrap .success-icon { font-size: 48px; margin-bottom: 16px; }
