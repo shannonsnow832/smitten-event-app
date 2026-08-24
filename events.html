@@ -12,20 +12,26 @@
      2026-08-24: pale blush page, white work surfaces, red as an accent,
      borders instead of shadows, 8px surfaces and 6px controls. Brand
      colours themselves are unchanged. */
+  /* Aligned to the Smitten Singles User-Facing Style Guide, approved
+     2026-08-24. That guide governs participant screens and is a companion
+     to, not the same as, the admin design system: same palette, warmer and
+     more generous treatment. Hex values below are taken from it directly. */
   :root {
     --red: #C6302C;
     --red-light: #DA5C58;
     --pink: #FBB3B1;
-    --blush: #FDF7F6;
-    --border: #EBE7E6;
+    --blush: #FFF8F7;
+    --border: #E9E5E3;
     --gray-light: #EFEFF1;
-    --gray-dark: #5A5353;
+    --gray-dark: #706B69;
     --gray-mid: #BFBFBF;
     --white: #FFFFFF;
-    --black: #000000;
-    --radius: 8px;
-    --radius-sm: 6px;
-    --shadow: none;
+    --black: #171313;
+    --radius: 10px;
+    --radius-sm: 8px;
+    /* Very subtle, per the guide. Borders and background contrast do the
+       work first. */
+    --shadow: 0 2px 8px rgba(0,0,0,.05);
   }
   h1, h2, h3, h4 { text-transform: uppercase; letter-spacing: -0.01em; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
